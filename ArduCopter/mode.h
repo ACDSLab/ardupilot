@@ -1254,3 +1254,26 @@ protected:
 
     uint32_t last_log_ms;   // system time of last time desired velocity was logging
 };
+
+class ModeManual : public Mode {
+
+public:
+    // inherit constructor
+    using Copter::Mode::Mode;
+
+    virtual bool init(bool ignore_checks) override; // called when switching into this new mode
+    virtual void run() override; // called at 400 Hz
+
+    bool requires_GPS() const override { return false; }
+    bool has_manual_throttle() const override { return true; }
+    bool allows_arming(bool from_gcs) const override { return true; };
+    bool is_autopilot() const override { return false; }
+
+protected:
+
+    const char *name() const override { return "MANUAL"; }
+    const char *name4() const override { return "MANU"; }
+
+private:
+
+};
