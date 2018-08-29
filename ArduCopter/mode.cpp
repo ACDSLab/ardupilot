@@ -159,6 +159,10 @@ Copter::Mode *Copter::mode_from_mode_num(const uint8_t mode)
 
         default:
             break;
+
+        case MANUAL:
+            ret = &mode_manual;
+            break;
     }
 
     return ret;

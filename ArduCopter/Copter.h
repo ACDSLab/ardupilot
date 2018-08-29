@@ -82,6 +82,8 @@
 #include <AP_Arming/AP_Arming.h>
 #include <AP_SmartRTL/AP_SmartRTL.h>
 #include <AP_TempCalibration/AP_TempCalibration.h>
+#include <SRV_Channel/SRV_Channel.h> // Added so we can do manual control like on plane
+
 
 // Configuration
 #include "defines.h"
@@ -989,6 +991,7 @@ private:
 #if !HAL_MINIMIZE_FEATURES && OPTFLOW == ENABLED
     ModeFlowHold mode_flowhold;
 #endif
+    ModeManual mode_manual;
 
     // mode.cpp
     Mode *mode_from_mode_num(const uint8_t mode);
