@@ -84,7 +84,6 @@
 #include <AP_TempCalibration/AP_TempCalibration.h>
 #include <SRV_Channel/SRV_Channel.h> // Added so we can do manual control like on plane
 
-
 // Configuration
 #include "defines.h"
 #include "config.h"

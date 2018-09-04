@@ -1298,5 +1298,6 @@ protected:
     const char *name4() const override { return "COAN"; }
 
 private:
+//    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
 
 };
