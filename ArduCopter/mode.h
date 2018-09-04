@@ -1277,3 +1277,26 @@ protected:
 private:
 
 };
+
+class ModeCoanda : public Mode {
+
+public:
+    // inherit constructor
+    using Copter::Mode::Mode;
+
+    virtual bool init(bool ignore_checks) override; // called when switching into this new mode
+    virtual void run() override; // called at 400 Hz
+
+    bool requires_GPS() const override { return false; }
+    bool has_manual_throttle() const override { return false; }
+    bool allows_arming(bool from_gcs) const override { return false; };
+    bool is_autopilot() const override { return true; }
+
+protected:
+
+    const char *name() const override { return "COANDA"; }
+    const char *name4() const override { return "COAN"; }
+
+private:
+
+};

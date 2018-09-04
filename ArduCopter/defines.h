@@ -53,7 +53,8 @@ enum control_mode_t {
     SMART_RTL =    21,  // SMART_RTL returns to home by retracing its steps
     FLOWHOLD  =    22,  // FLOWHOLD holds position with optical flow without rangefinder
     FOLLOW    =    23,  // follow attempts to follow another vehicle or ground station
-    MANUAL    =    24   // Pass through RC input to PWM, no stabilization
+    MANUAL    =    24,  // Pass through RC input to PWM, no stabilization
+    COANDA  =    25   // Airframe stabilized to zero pitch and yaw through LQR control, no manual control
 };
 
 enum mode_reason_t {

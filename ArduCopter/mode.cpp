@@ -156,13 +156,17 @@ Copter::Mode *Copter::mode_from_mode_num(const uint8_t mode)
             ret = &mode_follow;
             break;
 #endif
+        case MANUAL:
+            ret = &mode_manual;
+            break;
+
+        case COANDA:
+            ret = &mode_coanda;
+            break;
 
         default:
             break;
 
-        case MANUAL:
-            ret = &mode_manual;
-            break;
     }
 
     return ret;
