@@ -83,7 +83,7 @@
 #include <AP_SmartRTL/AP_SmartRTL.h>
 #include <AP_TempCalibration/AP_TempCalibration.h>
 #include <SRV_Channel/SRV_Channel.h> // Added so we can do manual control like on plane
-#include <AP_CEMAV/AP_CEMAV.h>
+#include <CEMAV/CEMAV.h>
 
 // Configuration
 #include "defines.h"
