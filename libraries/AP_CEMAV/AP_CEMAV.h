@@ -8,6 +8,7 @@
 #ifndef COANDA_MAV_H_
 #define COANDA_MAV_H_
 
+int COANDA_MAX_RATE = 20;
 
 
 

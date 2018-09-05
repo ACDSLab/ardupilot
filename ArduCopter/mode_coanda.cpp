@@ -55,7 +55,7 @@ void Copter::ModeCoanda::run()
     double des_r = 0;  // desired yaw rate
 
     double K_r = 10; // gain on yaw rate proportional control
-    int u = K_r*(des_r - r) / 20 * 400 + 1500;
+    int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
     SRV_Channels::set_output_pwm(SRV_Channel::k_aileron,
             max(min(u, 1900), 1100));
 
