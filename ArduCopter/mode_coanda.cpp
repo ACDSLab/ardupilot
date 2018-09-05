@@ -4,21 +4,6 @@
  * Init and run calls for mode coanda flight mode
  */
 
- int max(int a, int b) {
-     if (a > b) {
-         return a;
-     } else {
-         return b;
-     }
- }
-
- int min(int a, int b) {
-     if (b > a) {
-         return a;
-     } else {
-         return b;
-     }
- }
 
 // stabilize_init - initialise stabilize controller
 bool Copter::ModeCoanda::init(bool ignore_checks)
@@ -57,7 +42,7 @@ void Copter::ModeCoanda::run()
     double K_r = 10; // gain on yaw rate proportional control
     int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
     SRV_Channels::set_output_pwm(SRV_Channel::k_aileron,
-            max(min(u, 1900), 1100));
+            constrain_value(u, 1100, 1900));
 
 
 }
