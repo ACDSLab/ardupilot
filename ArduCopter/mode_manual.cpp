@@ -37,10 +37,10 @@ void Copter::ModeManual::run()
     // From a function called void Plane::set_servos_manual_passthrough(void) in servos.cpp in ArduPlane
     // channel_roll to channel_throttle are channels on the radio. We get the controls from rc_in, and then
     // pass them to the respect servo channels k_rcin1 - 4
-    SRV_Channels::set_output_scaled(SRV_Channel::k_aileron, channel_roll->get_control_in_zero_dz());
-    SRV_Channels::set_output_scaled(SRV_Channel::k_elevator, channel_pitch->get_control_in_zero_dz());
-    SRV_Channels::set_output_scaled(SRV_Channel::k_rudder, channel_yaw->get_control_in_zero_dz());
-    SRV_Channels::set_output_scaled(SRV_Channel::k_throttle, channel_throttle->get_control_in_zero_dz());
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor1, channel_roll->get_control_in_zero_dz());
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor2, channel_pitch->get_control_in_zero_dz());
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor5, channel_yaw->get_control_in_zero_dz());
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor6, channel_throttle->get_control_in_zero_dz());
 
 //    AP_Vehicle::MultiCopter &aparm = copter.aparm;
 

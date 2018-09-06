@@ -17,7 +17,6 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
     pos_control->set_alt_target(0);
 
 
-
     return true;
 }
 
@@ -26,9 +25,10 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
 void Copter::ModeCoanda::run()
 {
 	// Get the pilot input from rudder channel: 4
+
     // Get the state feedback gains from the copter parameters
 	int16_t yaw_rate_stick = channel_yaw->get_control_in_zero_dz();
-	float des_yaw = ModeCoanda::CEMAV_Vehicle::get_pilot_des_yaw_rate(yaw_rate_stick);
+	float des_yaw = CE_Vehicle.get_pilot_des_yaw_rate(yaw_rate_stick);
     // Get the current state from the EKF
 //    Vector3f _attitude_target_euler_angle = Vector3f(ahrs.roll, ahrs.pitch, ahrs.yaw);
     Vector3f _body_rates = ahrs.get_gyro();
@@ -43,7 +43,7 @@ void Copter::ModeCoanda::run()
 
     double K_r = 10; // gain on yaw rate proportional control
     int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
-    SRV_Channels::set_output_pwm(SRV_Channel::k_aileron,
+    SRV_Channels::set_output_pwm(SRV_Channel::k_motor5,
             constrain_value(u, 1100, 1900));
 
 

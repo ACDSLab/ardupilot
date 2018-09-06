@@ -1279,7 +1279,7 @@ private:
 };
 
 class ModeCoanda : public Mode {
-
+    friend class CEMAV;
 public:
     // inherit constructor
     using Copter::Mode::Mode;
@@ -1291,6 +1291,9 @@ public:
     bool has_manual_throttle() const override { return false; }
     bool allows_arming(bool from_gcs) const override { return false; };
     bool is_autopilot() const override { return true; }
+
+    CEMAV CE_Vehicle;
+
 
 protected:
 

@@ -7,7 +7,6 @@
 
 #include "CEMAV.h"
 
-
 /* Define functions to parse stick inputs (PWM). Functions are seperate in case
 we want separate logic for each pilot input
  */

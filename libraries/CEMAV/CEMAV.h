@@ -6,6 +6,9 @@
  */
 #pragma once
 
+#include <AP_Common/AP_Common.h>
+#include <AP_Param/AP_Param.h>
+
 #ifndef COANDA_MAV_H_
 #define COANDA_MAV_H_
 
@@ -21,19 +24,20 @@ const int CEMAV_MAX_THROTTLE = 1; // max yaw rate in throttle percent
 
 class CEMAV {
 public:
-	float get_pilot_des_yaw_rate(int16_t stick_input);
+	float get_pilot_des_yaw_rate(int16_t stick_input);// { return stick_input / MAX_YAW_STICK_INPUT * CEMAV_MAX_YAW_RATE; };
 	float get_pilot_des_p_rate(int16_t stick_input);  // X axis body rate desired
 	float get_pilot_des_q_rate(int16_t stick_input);  // Y axis body rate desired
 	float get_pilot_des_pitch(int16_t stick_input);
 	float get_pilot_des_roll(int16_t stick_input);
 	float get_pilot_des_throttle(int16_t stick_input);
+
 private:
-	const int16_t MAX_YAW_STICK_INPUT;
-	const int16_t MAX_P_STICK_INPUT;
-	const int16_t MAX_Q_STICK_INPUT;
-	const int16_t MAX_PITCH_STICK_INPUT;
-	const int16_t MAX_ROLL_STICK_INPUT;
-	const int16_t MAX_THROTTLE_STICK_INPUT;
+	const int16_t MAX_YAW_STICK_INPUT = 1900;
+	const int16_t MAX_P_STICK_INPUT = 1900;
+	const int16_t MAX_Q_STICK_INPUT = 1900;
+	const int16_t MAX_PITCH_STICK_INPUT = 1900;
+	const int16_t MAX_ROLL_STICK_INPUT = 1900;
+	const int16_t MAX_THROTTLE_STICK_INPUT = 1900;
 };
 
 
