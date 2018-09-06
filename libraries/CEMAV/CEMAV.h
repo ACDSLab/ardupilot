@@ -22,9 +22,11 @@ const int CEMAV_MAX_THROTTLE = 1; // max yaw rate in throttle percent
 
 // Define new parameters:
 #define MY_NEW_PARAM_DEFAULT 20
-//#define MAX_YAW_RATE_DEFAULT 2
+#define MY_NEW_PARAM_DEFAULT2 21
 
-//#define COANDA_MAX_YAW_RATE 2;
+//#define MAX_YAW_RATE_DEFAULT 2.0
+
+#define COANDA_MAX_YAW_RATE 2;
 
 class CEMAV {
 public:
@@ -48,7 +50,9 @@ private:
 
 
 protected:
-    AP_Int16 my_new_lib_parameter; // new param
+    AP_Float my_new_lib_parameter; // new param
+    AP_Float my_new_lib_parameter2; // new param
+
 //    AP_Float MAX_YAW_RATE;
 };
 
