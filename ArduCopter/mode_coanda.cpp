@@ -25,8 +25,10 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
 // should be called at 100hz or more
 void Copter::ModeCoanda::run()
 {
+	// Get the pilot input from rudder channel: 4
     // Get the state feedback gains from the copter parameters
-
+	int16_t yaw_rate_stick = channel_yaw->get_control_in_zero_dz();
+	float des_yaw = ModeCoanda::CEMAV_Vehicle::get_pilot_des_yaw_rate(yaw_rate_stick);
     // Get the current state from the EKF
 //    Vector3f _attitude_target_euler_angle = Vector3f(ahrs.roll, ahrs.pitch, ahrs.yaw);
     Vector3f _body_rates = ahrs.get_gyro();
@@ -36,8 +38,8 @@ void Copter::ModeCoanda::run()
 
 
     // Design a proporational controller for yaw rate. The setpoint is zero for this example
-    double r = _body_rates[2];  // current yaw rate
-    double des_r = 0;  // desired yaw rate
+    float r = _body_rates[2];  // current yaw rate
+    float des_r = des_yaw;  // desired yaw rate
 
     double K_r = 10; // gain on yaw rate proportional control
     int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
