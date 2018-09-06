@@ -244,6 +244,9 @@ private:
     Compass compass;
     AP_InertialSensor ins;
 
+    CEMAV cemav;
+
+
     RangeFinder rangefinder{serial_manager, ROTATION_PITCH_270};
     struct {
         bool enabled:1;

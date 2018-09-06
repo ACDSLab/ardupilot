@@ -28,7 +28,7 @@ void Copter::ModeCoanda::run()
 
     // Get the state feedback gains from the copter parameters
 	int16_t yaw_rate_stick = channel_yaw->get_control_in_zero_dz();
-	float des_yaw = CE_Vehicle.get_pilot_des_yaw_rate(yaw_rate_stick);
+	float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick);
     // Get the current state from the EKF
 //    Vector3f _attitude_target_euler_angle = Vector3f(ahrs.roll, ahrs.pitch, ahrs.yaw);
     Vector3f _body_rates = ahrs.get_gyro();

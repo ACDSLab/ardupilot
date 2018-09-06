@@ -362,6 +362,11 @@ public:
 
         // 254,255: reserved
 
+        //
+        // CEMAV Parameters
+        //
+        k_param_cemav ,
+
         // the k_param_* space is 9-bits in size
         // 511: reserved
     };

@@ -133,6 +133,9 @@ protected:
     float &G_Dt;
     ap_t &ap;
 
+    // Add a pointer to the cemav class instance so that the different modes can use it
+    CEMAV *cemav;
+
     // note that we support two entirely different automatic takeoffs:
 
     // "user-takeoff", which is available in modes such as ALT_HOLD
@@ -1279,7 +1282,6 @@ private:
 };
 
 class ModeCoanda : public Mode {
-    friend class CEMAV;
 public:
     // inherit constructor
     using Copter::Mode::Mode;
@@ -1291,8 +1293,6 @@ public:
     bool has_manual_throttle() const override { return false; }
     bool allows_arming(bool from_gcs) const override { return false; };
     bool is_autopilot() const override { return true; }
-
-    CEMAV CE_Vehicle;
 
 
 protected:
