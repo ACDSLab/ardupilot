@@ -25,26 +25,26 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
 void Copter::ModeCoanda::run()
 {
 	// Get the pilot input from rudder channel: 4
+	float yaw_rate_stick_norm = channel_yaw->norm_input_dz();
 
-    // Get the state feedback gains from the copter parameters
-	int16_t yaw_rate_stick = channel_yaw->get_control_in_zero_dz();
-	float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick);
+	float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm);
     // Get the current state from the EKF
-//    Vector3f _attitude_target_euler_angle = Vector3f(ahrs.roll, ahrs.pitch, ahrs.yaw);
-    Vector3f _body_rates = ahrs.get_gyro();
+
 
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
 //    float rpm_value = rpm_sensor.get_rpm(0);
 
 
-    // Design a proporational controller for yaw rate. The setpoint is zero for this example
-    float r = _body_rates[2];  // current yaw rate
-    float des_r = des_yaw;  // desired yaw rate
-
-    double K_r = 10; // gain on yaw rate proportional control
-    int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor5,
-            constrain_value(u, 1100, 1900));
+//    // Design a proporational controller for yaw rate. The setpoint is zero for this example
+//    float r = _body_rates[2] * RAD_TO_DEG;  // current yaw rate in deg/s
+//    float des_r = des_yaw;  // desired yaw rate in deg/s
+//
+//    double K_r = 10; // gain on yaw rate proportional control
+//    int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
+    // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
+    float u = cemav->compute_yaw_rate_control(des_yaw);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor5, u);
+//      SRV_Channels::set_output_pwm(SRV_Channel::k_motor5, des_yaw);
 
 
 }

@@ -134,7 +134,7 @@ protected:
     ap_t &ap;
 
     // Add a pointer to the cemav class instance so that the different modes can use it
-    CEMAV *cemav;
+    CEMAV *&cemav;
 
     // note that we support two entirely different automatic takeoffs:
 

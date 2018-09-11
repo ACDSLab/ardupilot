@@ -132,6 +132,7 @@ void Copter::init_ardupilot()
     // allocate the motors class
     allocate_motors();
 
+
     // sets up motors and output to escs
     init_rc_out();
 
@@ -386,6 +387,7 @@ void Copter::update_auto_armed()
         if(flightmode->has_manual_throttle() && ap.throttle_zero && !failsafe.radio) {
             set_auto_armed(false);
         }
+
 #if FRAME_CONFIG == HELI_FRAME
         // if helicopters are on the ground, and the motor is switched off, auto-armed should be false
         // so that rotor runup is checked again before attempting to take-off
@@ -567,13 +569,23 @@ void Copter::allocate_motors(void)
 
     const struct AP_Param::GroupInfo *ac_var_info;
 
+
 #if FRAME_CONFIG != HELI_FRAME
     attitude_control = new AC_AttitudeControl_Multi(*ahrs_view, aparm, *motors, scheduler.get_loop_period_s());
     ac_var_info = AC_AttitudeControl_Multi::var_info;
+
 #else
     attitude_control = new AC_AttitudeControl_Heli(*ahrs_view, aparm, *motors, scheduler.get_loop_period_s());
     ac_var_info = AC_AttitudeControl_Heli::var_info;
 #endif
+
+    //TODO Add a new parameter that confirms if we are using a CEMAV vehicle or not
+    cemav = new CEMAV(*ahrs_view, scheduler.get_loop_period_s());
+    if (cemav == nullptr) {
+        AP_HAL::panic("Unable to allocate CEMAV");
+    }
+    AP_Param::load_object_from_eeprom(cemav, cemav->var_info);
+
     if (attitude_control == nullptr) {
         AP_HAL::panic("Unable to allocate AttitudeControl");
     }

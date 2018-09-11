@@ -737,7 +737,7 @@ const AP_Param::Info Copter::var_info[] = {
 
     // @Group: CEMAV_
     // @Path: ../libraries/CEMAV/CEMAV.cpp
-    GOBJECT(cemav, "CEMAV_",  CEMAV),
+    GOBJECTPTR(cemav, "CE_",  CEMAV),
 
 #if MODE_THROW_ENABLED == ENABLED
     // @Param: THROW_MOT_START

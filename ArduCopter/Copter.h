@@ -244,9 +244,6 @@ private:
     Compass compass;
     AP_InertialSensor ins;
 
-    CEMAV cemav;
-
-
     RangeFinder rangefinder{serial_manager, ROTATION_PITCH_270};
     struct {
         bool enabled:1;
@@ -487,6 +484,8 @@ private:
     AC_PosControl *pos_control;
     AC_WPNav *wp_nav;
     AC_Loiter *loiter_nav;
+    CEMAV *cemav; // CEMAV library
+
 #if MODE_CIRCLE_ENABLED == ENABLED
     AC_Circle *circle_nav;
 #endif

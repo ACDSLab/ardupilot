@@ -5,61 +5,127 @@
  *      Author: Manan Gandhi
  */
 
+
 #include "CEMAV.h"
 
 // Add parameters to the var_info table
 const AP_Param::GroupInfo CEMAV::var_info[] = {
-		// @Param: MY_NEW_PARAM
-		// @DisplayName: Compass3 device id expected
-		// @Description: The expected value of COMPASS_DEV_ID3, used by arming checks. Setting this to -1 means "don't care."
-		AP_GROUPINFO("NEW_param", 0, CEMAV, my_new_lib_parameter, 20),
+		// @Param: MAX_YAW_DS
+		// @DisplayName: Maximum yaw rate in deg/s
+        // @Description: Maximum Yaw rate in deg/s. Max stick input commands max yaw rate.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("MAX_YAW_DS", 0, CEMAV, _max_yaw_ds, 360.0f),
 
-        // @Param: MY_NEW_PARAM2
-        // @DisplayName: Compass3 device id expected
-        // @Description: The expected value of COMPASS_DEV_ID3, used by arming checks. Setting this to -1 means "don't care."
-        AP_GROUPINFO("NEW_param2", 1, CEMAV, my_new_lib_parameter2, MY_NEW_PARAM_DEFAULT2),
 
-//        // @Param: MAX_YAW_RATE
-//        // @DisplayName: Maximum body yaw rate
-//        // @Description: Maximum body yaw rate of the cemav vehicle
-//        AP_GROUPINFO("MAX_YAW_RATE", 0, CEMAV, MAX_YAW_RATE, MAX_YAW_RATE_DEFAULT),
+        // @Param: RAT_YAW_P
+        // @DisplayName: Yaw axis rate controller P gain
+        // @Description: Yaw axis rate controller P gain.  Converts the difference between desired yaw rate and actual yaw rate into a motor speed output
+        // @Range: 0.10 2.50
+        // @Increment: 0.005
+        // @User: Standard
+
+        // @Param: RAT_YAW_I
+        // @DisplayName: Yaw axis rate controller I gain
+        // @Description: Yaw axis rate controller I gain.  Corrects long-term difference in desired yaw rate vs actual yaw rate
+        // @Range: 0.010 1.0
+        // @Increment: 0.01
+        // @User: Standard
+
+        // @Param: RAT_YAW_IMAX
+        // @DisplayName: Yaw axis rate controller I gain maximum
+        // @Description: Yaw axis rate controller I gain maximum.  Constrains the maximum motor output that the I gain will output
+        // @Range: 0 1
+        // @Increment: 0.01
+        // @Units: %
+        // @User: Standard
+
+        // @Param: RAT_YAW_D
+        // @DisplayName: Yaw axis rate controller D gain
+        // @Description: Yaw axis rate controller D gain.  Compensates for short-term change in desired yaw rate vs actual yaw rate
+        // @Range: 0.000 0.02
+        // @Increment: 0.001
+        // @User: Standard
+
+        // @Param: RAT_YAW_FF
+        // @DisplayName: Yaw axis rate controller feed forward
+        // @Description: Yaw axis rate controller feed forward
+        // @Range: 0 0.5
+        // @Increment: 0.001
+        // @User: Standard
+
+        // @Param: RAT_YAW_FILT
+        // @DisplayName: Yaw axis rate controller input frequency in Hz
+        // @Description: Yaw axis rate controller input frequency in Hz
+        // @Range: 1 10
+        // @Increment: 1
+        // @Units: Hz
+        // @User: Standard
+        AP_SUBGROUPINFO(_pid_rate_yaw, "RAT_YAW_", 1, CEMAV, AC_PID),
+
 
 		AP_GROUPEND
 
 };
 
+// CEMAV Constructor
+CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
+    _ahrs(ahrs),
+    _pid_rate_yaw(10, 1, 0, 0.5, 5, dt)
+{
+    AP_Param::setup_object_defaults(this, var_info);
+    SRV_Channels::set_angle(SRV_Channel::k_motor5, 720);
+
+}
+
 
 /* Define functions to parse stick inputs (PWM). Functions are seperate in case
-we want separate logic for each pilot input
+ * we want separate logic for each pilot input
  */
 
-float CEMAV::get_pilot_des_yaw_rate(int16_t stick_input) {
+float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 
-	return stick_input / MAX_YAW_STICK_INPUT * CEMAV_MAX_YAW_RATE;
+	return norm_stick_input*_max_yaw_ds;
 }
 
-float CEMAV::get_pilot_des_p_rate(int16_t stick_input) {
+//float CEMAV::get_pilot_des_p_rate(int16_t norm_stick_input) {
+//
+//	return norm_stick_input  * CEMAV_MAX_P_RATE;
+//}
+//
+//float CEMAV::get_pilot_des_q_rate(int16_t norm_stick_input) {
+//
+//	return norm_stick_input  * CEMAV_MAX_Q_RATE;
+//}
+//
+//float CEMAV::get_pilot_des_pitch(int16_t norm_stick_input) {
+//
+//	return norm_stick_input  * CEMAV_MAX_PITCH;
+//}
+//
+//float CEMAV::get_pilot_des_roll(int16_t norm_stick_input) {
+//
+//	return norm_stick_input  * CEMAV_MAX_ROLL;
+//}
+//
+//float CEMAV::get_pilot_des_throttle(int16_t norm_stick_input) {
+//
+//	return norm_stick_input  * CEMAV_MAX_THROTTLE;
+//}
 
-	return stick_input / MAX_P_STICK_INPUT * CEMAV_MAX_P_RATE;
-}
+/* Define functions to compute the PWM values for the inner control loop for
+ * body rates.
+ */
+float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
+    // Get the current yaw rate
+    float curr_yaw_rate = _ahrs.get_gyro()[2] * RAD_TO_DEG;
+//    float curr_yaw_rate = _ahrs.yaw* RAD_TO_DEG;
+    // Get the desired yaw rate
+    float error = des_yaw_rate - curr_yaw_rate;
+    _pid_rate_yaw.set_input_filter_d(error);
 
-float CEMAV::get_pilot_des_q_rate(int16_t stick_input) {
+    return _pid_rate_yaw.get_pid();
 
-	return stick_input / MAX_Q_STICK_INPUT * CEMAV_MAX_Q_RATE;
-}
-
-float CEMAV::get_pilot_des_pitch(int16_t stick_input) {
-
-	return stick_input / MAX_PITCH_STICK_INPUT * CEMAV_MAX_PITCH;
-}
-
-float CEMAV::get_pilot_des_roll(int16_t stick_input) {
-
-	return stick_input / MAX_ROLL_STICK_INPUT * CEMAV_MAX_ROLL;
-}
-
-float CEMAV::get_pilot_des_throttle(int16_t stick_input) {
-
-	return stick_input / MAX_THROTTLE_STICK_INPUT * CEMAV_MAX_THROTTLE;
 }
 
