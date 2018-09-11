@@ -30,22 +30,22 @@ void Copter::ModeCoanda::run()
 	float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm);
     // Get the current state from the EKF
 
-
-    // Get rpm value from RPM pin (the sensor is in AP_RPM)
-//    float rpm_value = rpm_sensor.get_rpm(0);
-
-
-//    // Design a proporational controller for yaw rate. The setpoint is zero for this example
-//    float r = _body_rates[2] * RAD_TO_DEG;  // current yaw rate in deg/s
-//    float des_r = des_yaw;  // desired yaw rate in deg/s
-//
-//    double K_r = 10; // gain on yaw rate proportional control
-//    int u = K_r*(des_r - r) / COANDA_MAX_RATE * 400 + 1500;
     // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
-    float u = cemav->compute_yaw_rate_control(des_yaw);
-    SRV_Channels::set_output_scaled(SRV_Channel::k_motor5, u);
+    float u_yaw_rate = cemav->compute_yaw_rate_control(des_yaw);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor5, u_yaw_rate);
 //      SRV_Channels::set_output_pwm(SRV_Channel::k_motor5, des_yaw);
 
+    // Get rpm value from RPM pin (the sensor is in AP_RPM)
+    float curr_rpm = copter.rpm_sensor.get_rpm(0);
+
+    // Get the pilot input percentage
+    float throttle_stick_percent = channel_throttle->percent_input();
+
+    float des_rpm = cemav->get_pilot_des_rpm(throttle_stick_percent);
+
+    // Use the PID controller to compute the output for the rpm controller
+    float u_rpm = cemav->compute_rpm_control(des_rpm, curr_rpm);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_motor6, u_rpm);
 
 }
 
