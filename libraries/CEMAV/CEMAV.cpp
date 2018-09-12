@@ -129,12 +129,12 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rpm(10, 0, 0, 0.5, 5, dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
-    SRV_Channels::set_angle(SRV_Channel::k_motor5, 720);
-    SRV_Channels::set_angle(SRV_Channel::k_motor6, 9000);
-    SRV_Channels::set_angle(SRV_Channel::k_motor1, 90);
-    SRV_Channels::set_angle(SRV_Channel::k_motor2, 90);
-    SRV_Channels::set_angle(SRV_Channel::k_motor3, 90);
-    SRV_Channels::set_angle(SRV_Channel::k_motor4, 90);
+    // SRV_Channels::set_angle(SRV_Channel::k_motor5, 720);
+    // SRV_Channels::set_angle(SRV_Channel::k_motor6, 9000);
+    // SRV_Channels::set_angle(SRV_Channel::k_motor1, 4500);
+    // SRV_Channels::set_angle(SRV_Channel::k_motor2, 4500);
+    // SRV_Channels::set_angle(SRV_Channel::k_motor3, 4500);
+    // SRV_Channels::set_angle(SRV_Channel::k_motor4, 4500);
 
 }
 
