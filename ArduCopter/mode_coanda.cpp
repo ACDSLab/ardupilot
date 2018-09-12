@@ -28,7 +28,7 @@ void Copter::ModeCoanda::run()
     // if not armed set throttle to zero and exit immediately
     if (!motors->armed())  {
         // zero_throttle_and_relax_ac();
-	    SRV_Channels::set_output_pwm(SRV_Channel::k_motor6, 900);
+	    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
         return;
     }
 	
@@ -43,7 +43,7 @@ void Copter::ModeCoanda::run()
 
     // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
     float u_yaw_rate = cemav->compute_yaw_rate_control(des_yaw);
-    SRV_Channels::set_output_scaled(SRV_Channel::k_motor5, u_yaw_rate);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_rudder, u_yaw_rate);
 
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
     float curr_rpm = copter.rpm_sensor.get_rpm(0);
@@ -55,13 +55,13 @@ void Copter::ModeCoanda::run()
 
     // Use the PID controller to compute the output for the rpm controller
     float u_rpm = cemav->compute_rpm_control(des_rpm, curr_rpm);
-    SRV_Channels::set_output_scaled(SRV_Channel::k_motor6, u_rpm);
+    SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_throttle, u_rpm);
 	
 	// Add manual "passthrough pwm" flap control
-	SRV_Channels::set_output_pwm(SRV_Channel::k_motor1, channel_roll->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor2, channel_pitch->get_radio_in());
-	SRV_Channels::set_output_pwm(SRV_Channel::k_motor3, channel_roll->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor4, channel_pitch->get_radio_in());
+	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, channel_roll->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, channel_pitch->get_radio_in());
+	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 
 }
 

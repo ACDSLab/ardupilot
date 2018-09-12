@@ -27,7 +27,7 @@ void Copter::ModeManual::run()
    // if not armed set throttle to zero and exit immediately
    if (!motors->armed() ) {
        // zero_throttle_and_relax_ac();
-	   SRV_Channels::set_output_pwm(SRV_Channel::k_motor6, 900);
+	   SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
        return;
    }
 
@@ -38,16 +38,14 @@ void Copter::ModeManual::run()
     // From a function called void Plane::set_servos_manual_passthrough(void) in servos.cpp in ArduPlane
     // channel_roll to channel_throttle are channels on the radio. We get the controls from rc_in, and then
     // pass them to the respect servo channels k_rcin1 - 4
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor1, channel_roll->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor2, channel_pitch->get_radio_in());
-	SRV_Channels::set_output_pwm(SRV_Channel::k_motor3, channel_roll->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor4, channel_pitch->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, channel_roll->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, channel_pitch->get_radio_in());
+	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 	
 	
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor5, channel_yaw->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor6, channel_throttle->get_radio_in());
-
-//    AP_Vehicle::MultiCopter &aparm = copter.aparm;
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, channel_yaw->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
 
 
 

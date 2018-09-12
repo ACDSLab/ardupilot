@@ -121,6 +121,16 @@ public:
         k_dspoilerLeft2         = 86,           ///< differential spoiler 2 (left wing)
         k_dspoilerRight2        = 87,           ///< differential spoiler 2 (right wing)
         k_winch                 = 88,
+        k_cemav_flap1           = 89,
+        k_cemav_flap2           = 90,
+        k_cemav_flap3           = 91,
+        k_cemav_flap4           = 92,
+        k_cemav_flap5           = 93,
+        k_cemav_flap6           = 94,
+        k_cemav_flap7           = 95,
+        k_cemav_flap8           = 96,
+        k_cemav_rudder          = 97,
+        k_cemav_throttle        = 98,
         k_nr_aux_servo_functions         ///< This must be the last enum value (only add new values _before_ this one)
     } Aux_servo_function_t;
 
