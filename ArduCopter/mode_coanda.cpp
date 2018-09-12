@@ -31,6 +31,9 @@ void Copter::ModeCoanda::run()
 	    SRV_Channels::set_output_pwm(SRV_Channel::k_motor6, 900);
         return;
     }
+	
+	// clear landing flag
+    set_land_complete(false);
    
 	// Get the pilot input from rudder channel: 4
 	float yaw_rate_stick_norm = channel_yaw->norm_input_dz();
@@ -41,7 +44,6 @@ void Copter::ModeCoanda::run()
     // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
     float u_yaw_rate = cemav->compute_yaw_rate_control(des_yaw);
     SRV_Channels::set_output_scaled(SRV_Channel::k_motor5, u_yaw_rate);
-//      SRV_Channels::set_output_pwm(SRV_Channel::k_motor5, des_yaw);
 
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
     float curr_rpm = copter.rpm_sensor.get_rpm(0);
@@ -54,6 +56,12 @@ void Copter::ModeCoanda::run()
     // Use the PID controller to compute the output for the rpm controller
     float u_rpm = cemav->compute_rpm_control(des_rpm, curr_rpm);
     SRV_Channels::set_output_scaled(SRV_Channel::k_motor6, u_rpm);
+	
+	// Add manual "passthrough pwm" flap control
+	SRV_Channels::set_output_pwm(SRV_Channel::k_motor1, channel_roll->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_motor2, channel_pitch->get_radio_in());
+	SRV_Channels::set_output_pwm(SRV_Channel::k_motor3, channel_roll->get_radio_in());
+    SRV_Channels::set_output_pwm(SRV_Channel::k_motor4, channel_pitch->get_radio_in());
 
 }
 
