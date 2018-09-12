@@ -31,7 +31,7 @@ public:
 //	float get_pilot_des_q_rate(int16_t norm_stick_input);  // Y axis body rate desired
 //	float get_pilot_des_pitch(int16_t norm_stick_input);
 //	float get_pilot_des_roll(int16_t norm_stick_input);
-	float get_pilot_des_rpm(float norm_stick_input);
+	float get_pilot_des_crpm(float stick_percent_input);
 
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);

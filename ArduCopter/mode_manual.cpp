@@ -1,5 +1,6 @@
 #include "Copter.h"
 
+
 /*
  * Init and run calls for manual flight mode
  */
@@ -36,7 +37,7 @@ void Copter::ModeManual::run()
 
     float throttle_stick_percent = channel_throttle->percent_input();
 
-    float des_rpm = cemav->get_pilot_des_rpm(throttle_stick_percent);
+    float des_rpm = cemav->get_pilot_des_crpm(throttle_stick_percent);
 
 
     // From a function called void Plane::set_servos_manual_passthrough(void) in servos.cpp in ArduPlane

@@ -184,9 +184,9 @@ float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 //	return norm_stick_input  * CEMAV_MAX_ROLL;
 //}
 //
-float CEMAV::get_pilot_des_rpm(float norm_stick_input) {
+float CEMAV::get_pilot_des_crpm(float stick_percent_input) {
 
-	return norm_stick_input  * _max_rpm / 100;
+	return stick_percent_input  * _max_rpm / 100;
 }
 
 /* Define functions to compute the PWM values for the inner control loop for

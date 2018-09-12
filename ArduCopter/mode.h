@@ -1,5 +1,4 @@
 #pragma once
-
 // this class is #included into the Copter:: namespace
 
 class Mode {
