@@ -57,8 +57,8 @@ void Copter::ModeCoanda::run()
     // Use the PID controller to compute the output for the rpm controller
     float u_throttle = cemav->compute_rpm_control(des_rpm, curr_rpm);
 
-    uint16_t curr_throttle = SRV_Channels::get_output_scaled(SRV_Channel::k_cemav_throttle); // Current throttle setting
-    SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_throttle, constrain_value(curr_throttle + u_throttle, (float)0, (float)9000));
+//    uint16_t curr_throttle = SRV_Channels::get_output_scaled(SRV_Channel::k_cemav_throttle); // Current throttle setting
+    SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_throttle, constrain_value(curr_rpm + constrain_value(u_throttle, (float)-100, (float)100), (float)0, (float)9000));
 
 
 	// Add manual "passthrough pwm" flap control
@@ -67,7 +67,7 @@ void Copter::ModeCoanda::run()
 	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) u_throttle);
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
 
 
