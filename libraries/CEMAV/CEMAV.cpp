@@ -204,7 +204,7 @@ float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
 }
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
-    float error = curr_rpm - des_rpm;
+    float error = des_rpm - curr_rpm;
     _pid_rpm.set_input_filter_d(error);
 
     return _pid_rpm.get_pid();

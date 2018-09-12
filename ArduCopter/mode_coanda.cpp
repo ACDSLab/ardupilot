@@ -48,8 +48,6 @@ void Copter::ModeCoanda::run()
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
     float curr_rpm = copter.rpm_sensor.get_rpm(0);
 
-    SRV_Channels::set_output_pwm(SRV_Channel::k_motor5, (int) curr_rpm);
-
     // Get the pilot input percentage
     float throttle_stick_percent = channel_throttle->percent_input();
 
