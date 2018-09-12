@@ -140,7 +140,7 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     SRV_Channels::set_angle(SRV_Channel::k_motor1, _m1_scale);
     SRV_Channels::set_angle(SRV_Channel::k_motor2, _m2_scale);
     SRV_Channels::set_angle(SRV_Channel::k_motor3, _m3_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_motor4, _m4_scale)
+    SRV_Channels::set_angle(SRV_Channel::k_motor4, _m4_scale);
 }
 
 

@@ -98,3 +98,4 @@ config.mk
 *.apj
 .gdbinit
 /.vscode
+/.idea
