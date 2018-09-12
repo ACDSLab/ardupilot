@@ -24,6 +24,14 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
 // should be called at 100hz or more
 void Copter::ModeCoanda::run()
 {
+	
+    // if not armed set throttle to zero and exit immediately
+    if (!motors->armed() || ap.throttle_zero || !motors->get_interlock()) {
+        // zero_throttle_and_relax_ac();
+	    SRV_Channels::set_output_pwm(SRV_Channel::k_motor6, 900);
+        return;
+    }
+   
 	// Get the pilot input from rudder channel: 4
 	float yaw_rate_stick_norm = channel_yaw->norm_input_dz();
 
