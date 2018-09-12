@@ -116,6 +116,12 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Units: Hz
         // @User: Standard
         AP_SUBGROUPINFO(_pid_rpm, "RPM_", 3, CEMAV, AC_PID),
+		AP_GROUPINFO("M1_SCALE", 4, CEMAV, _m1_scale, 720),
+		AP_GROUPINFO("M2_SCALE", 5, CEMAV, _m2_scale, 720),
+		AP_GROUPINFO("M3_SCALE", 6, CEMAV, _m3_scale, 720),
+		AP_GROUPINFO("M4_SCALE", 7, CEMAV, _m4_scale, 720),
+		AP_GROUPINFO("M5_SCALE", 8, CEMAV, _m5_scale, 720),
+		AP_GROUPINFO("M6_SCALE", 9, CEMAV, _m6_scale, 9000),
 
 
 		AP_GROUPEND
@@ -129,13 +135,12 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rpm(10, 0, 0, 0.5, 5, dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
-    // SRV_Channels::set_angle(SRV_Channel::k_motor5, 720);
-    // SRV_Channels::set_angle(SRV_Channel::k_motor6, 9000);
-    // SRV_Channels::set_angle(SRV_Channel::k_motor1, 4500);
-    // SRV_Channels::set_angle(SRV_Channel::k_motor2, 4500);
-    // SRV_Channels::set_angle(SRV_Channel::k_motor3, 4500);
-    // SRV_Channels::set_angle(SRV_Channel::k_motor4, 4500);
-
+    SRV_Channels::set_angle(SRV_Channel::k_motor5, _m5_scale);
+    SRV_Channels::set_range(SRV_Channel::k_motor6, _m6_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_motor1, _m1_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_motor2, _m2_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_motor3, _m3_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_motor4, _m4_scale)
 }
 
 
