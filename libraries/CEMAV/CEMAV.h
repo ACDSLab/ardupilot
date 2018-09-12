@@ -56,12 +56,17 @@ private:
     AP_Float _max_rpm; // Maximum rpm in rev per minute
     AC_PID   _pid_rate_yaw; // Parameters for AC_PID class yaw channel
     AC_PID   _pid_rpm;
-	AP_Int16 _m1_scale;
-	AP_Int16 _m2_scale;
-	AP_Int16 _m3_scale;
-	AP_Int16 _m4_scale;
-	AP_Int16 _m5_scale;
-	AP_Int16 _m6_scale;
+	AP_Int16 _f1_scale;
+	AP_Int16 _f2_scale;
+	AP_Int16 _f3_scale;
+	AP_Int16 _f4_scale;
+	AP_Int16 _f5_scale;
+	AP_Int16 _f6_scale;
+    AP_Int16 _f7_scale;
+    AP_Int16 _f8_scale;
+
+    AP_Int16 _r_scale;
+    AP_Int16 _t_scale;
 
 };
 

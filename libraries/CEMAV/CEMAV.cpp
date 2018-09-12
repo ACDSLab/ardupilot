@@ -16,7 +16,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_YAW_DS", 0, CEMAV, _max_yaw_ds, 360.0f),
+        AP_GROUPINFO("MAX_YAW_DS", 0, CEMAV, _max_yaw_ds, 720.0f),
 
         // @Param: MAX_RPM
         // @DisplayName: Maximum motor speed in rpm
@@ -24,7 +24,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_RPM", 1, CEMAV, _max_rpm, 3000.0f),
+        AP_GROUPINFO("MAX_RPM", 1, CEMAV, _max_rpm, 9000.0f),
 
 
         // @Param: RAT_YAW_P
@@ -116,12 +116,17 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Units: Hz
         // @User: Standard
         AP_SUBGROUPINFO(_pid_rpm, "RPM_", 3, CEMAV, AC_PID),
-		AP_GROUPINFO("M1_SCALE", 4, CEMAV, _m1_scale, 720),
-		AP_GROUPINFO("M2_SCALE", 5, CEMAV, _m2_scale, 720),
-		AP_GROUPINFO("M3_SCALE", 6, CEMAV, _m3_scale, 720),
-		AP_GROUPINFO("M4_SCALE", 7, CEMAV, _m4_scale, 720),
-		AP_GROUPINFO("M5_SCALE", 8, CEMAV, _m5_scale, 720),
-		AP_GROUPINFO("M6_SCALE", 9, CEMAV, _m6_scale, 9000),
+		AP_GROUPINFO("FL1_SCALE", 4, CEMAV, _f1_scale, 9000),
+		AP_GROUPINFO("FL2_SCALE", 5, CEMAV, _f2_scale, 9000),
+		AP_GROUPINFO("FL3_SCALE", 6, CEMAV, _f3_scale, 9000),
+		AP_GROUPINFO("FL4_SCALE", 7, CEMAV, _f4_scale, 9000),
+		AP_GROUPINFO("FL5_SCALE", 8, CEMAV, _f5_scale, 9000),
+		AP_GROUPINFO("FL6_SCALE", 9, CEMAV, _f6_scale, 9000),
+        AP_GROUPINFO("FL7_SCALE", 10, CEMAV, _f7_scale, 9000),
+        AP_GROUPINFO("FL8_SCALE", 11, CEMAV, _f8_scale, 9000),
+        AP_GROUPINFO("RUD_SCALE", 12, CEMAV, _r_scale, 720),
+        AP_GROUPINFO("THR_SCALE", 13, CEMAV, _t_scale, 9000),
+
 
 
 		AP_GROUPEND
@@ -135,12 +140,18 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rpm(10, 0, 0, 0.5, 5, dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
-    SRV_Channels::set_angle(SRV_Channel::k_motor5, _m5_scale);
-    SRV_Channels::set_range(SRV_Channel::k_motor6, _m6_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_motor1, _m1_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_motor2, _m2_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_motor3, _m3_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_motor4, _m4_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap1, _f1_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap2, _f2_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap3, _f3_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap4, _f4_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap5, _f5_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap6, _f6_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap7, _f7_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap8, _f8_scale);
+
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_rudder, _r_scale);
+    SRV_Channels::set_range(SRV_Channel::k_cemav_throttle, _t_scale);
+    SRV_Channels::update_aux_servo_function();
 }
 
 
@@ -175,7 +186,7 @@ float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 //
 float CEMAV::get_pilot_des_rpm(float norm_stick_input) {
 
-	return norm_stick_input  * _max_rpm;
+	return norm_stick_input  * _max_rpm / 100;
 }
 
 /* Define functions to compute the PWM values for the inner control loop for
@@ -193,7 +204,7 @@ float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
 }
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
-    float error = des_rpm - curr_rpm;
+    float error = curr_rpm - des_rpm;
     _pid_rpm.set_input_filter_d(error);
 
     return _pid_rpm.get_pid();

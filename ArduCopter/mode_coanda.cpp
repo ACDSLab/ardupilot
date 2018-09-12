@@ -48,6 +48,8 @@ void Copter::ModeCoanda::run()
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
     float curr_rpm = copter.rpm_sensor.get_rpm(0);
 
+    SRV_Channels::set_output_pwm(SRV_Channel::k_motor5, (int) curr_rpm);
+
     // Get the pilot input percentage
     float throttle_stick_percent = channel_throttle->percent_input();
 
@@ -56,27 +58,15 @@ void Copter::ModeCoanda::run()
     // Use the PID controller to compute the output for the rpm controller
     float u_rpm = cemav->compute_rpm_control(des_rpm, curr_rpm);
     SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_throttle, u_rpm);
-	
+
+
 	// Add manual "passthrough pwm" flap control
 	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, channel_roll->get_radio_in());
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, channel_pitch->get_radio_in());
 	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 
+    SRV_Channels::calc_pwm();
+
+    SRV_Channels::output_ch_all();
 }
-
-//int Copter::ModeCoanda::scale_input_to_pwm(input, input_range, center_input) {
-//    double max_r_rate = 20;  // Assume the angular rate goes from -20 to 20
-//    return (input / max_r_rate) * input_range + center_input;
-//}
-
-
-//// Basic servo controller based on attitude
-//int u = _attitude_target_euler_angle[0] / 3.1412 * (400) + 1500;
-//
-//
-//
-//if (motors->armed()) {
-//// Pass the controls to the servos without scaling. u[0] - u[4]
-//SRV_Channels::set_output_pwm(SRV_Channel::k_aileron, u);
-//}
