@@ -7,11 +7,11 @@
 // manual_init - initialise manual controller
 bool Copter::ModeManual::init(bool ignore_checks)
 {
-    // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
-    if (motors->armed() && ap.land_complete && !copter.flightmode->has_manual_throttle() &&
-            (get_pilot_desired_throttle(channel_throttle->get_control_in()) > get_non_takeoff_throttle())) {
-        return false;
-    }
+    // // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
+    // if (motors->armed() && ap.land_complete && !copter.flightmode->has_manual_throttle() &&
+            // (get_pilot_desired_throttle(channel_throttle->get_control_in()) > get_non_takeoff_throttle())) {
+        // return false;
+    // }
     // set target altitude to zero for reporting
     pos_control->set_alt_target(0);
 
