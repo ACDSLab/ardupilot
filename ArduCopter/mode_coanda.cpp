@@ -46,18 +46,18 @@ void Copter::ModeCoanda::run()
     SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_rudder, u_yaw_rate);
 
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
-//    float curr_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
-    float curr_rpm = 4500;
+    float curr_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
     // Get the pilot input percentage
-    uint8_t throttle_stick_percent = channel_throttle->percent_input();
+    uint8_t throttle_stick_percent = channel_throttle->percent_input();  // This gives us something 0 - 100
 
-    float des_rpm = cemav->get_pilot_des_crpm(throttle_stick_percent);
+    float des_rpm = cemav->get_pilot_des_rpm(throttle_stick_percent);  // Desired RPM
 
     // Use the PID controller to compute the output for the rpm controller
-    float u_throttle = cemav->compute_rpm_control(des_rpm, curr_rpm);
+    float u_rpm = cemav->compute_rpm_control(des_rpm, curr_rpm); // Kp * (RPM_error)
+    float u_pwm = constrain_value(u_rpm, (float) 0, (float) 1) * (channel_throttle->get_radio_max() - channel_throttle->get_radio_min()) + channel_throttle->get_radio_min();
 
-    SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_throttle, constrain_value(curr_rpm + u_throttle, (float)0, (float)9000));
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, (int) u_pwm);
 
 
 	// Add manual "passthrough pwm" flap control
@@ -67,11 +67,12 @@ void Copter::ModeCoanda::run()
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 
 
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) throttle_stick_percent);
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) des_rpm);
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) u_rpm*9000.0);
 
 
     SRV_Channels::calc_pwm();
 
     SRV_Channels::output_ch_all();
 }
+

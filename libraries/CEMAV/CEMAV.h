@@ -31,7 +31,7 @@ public:
 //	float get_pilot_des_q_rate(int16_t norm_stick_input);  // Y axis body rate desired
 //	float get_pilot_des_pitch(int16_t norm_stick_input);
 //	float get_pilot_des_roll(int16_t norm_stick_input);
-	float get_pilot_des_crpm(float stick_percent_input);
+	float get_pilot_des_rpm(uint8_t throttle_stick_percent);
 
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
@@ -45,6 +45,8 @@ public:
     AC_PID& get_rpm_pid() {return _pid_rpm; }
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
+
+    float get_max_rpm() {return _max_rpm;}
 
 private:
 
