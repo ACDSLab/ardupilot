@@ -35,10 +35,6 @@ void Copter::ModeManual::run()
     // clear landing flag
     set_land_complete(false);
 
-    float throttle_stick_percent = channel_throttle->percent_input();
-
-    float des_rpm = cemav->get_pilot_des_crpm(throttle_stick_percent);
-
 
     // From a function called void Plane::set_servos_manual_passthrough(void) in servos.cpp in ArduPlane
     // channel_roll to channel_throttle are channels on the radio. We get the controls from rc_in, and then
@@ -54,8 +50,9 @@ void Copter::ModeManual::run()
 
     // DEBUG
     float curr_rpm = copter.rpm_sensor.get_rpm(0);
+    uint8_t throttle_stick_percent = channel_throttle->percent_input();
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) throttle_stick_percent);
 
 
 

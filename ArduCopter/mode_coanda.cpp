@@ -66,8 +66,8 @@ void Copter::ModeCoanda::run()
 	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 
-    uint16_t curr_throttle = SRV_Channels::get_output_scaled(SRV_Channel::k_cemav_throttle); // Current throttle setting
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_throttle);
+
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) throttle_stick_percent);
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
 
 
