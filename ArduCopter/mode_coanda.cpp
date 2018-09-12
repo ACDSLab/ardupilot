@@ -46,8 +46,8 @@ void Copter::ModeCoanda::run()
     SRV_Channels::set_output_scaled(SRV_Channel::k_cemav_rudder, u_yaw_rate);
 
     // Get rpm value from RPM pin (the sensor is in AP_RPM)
-//    float curr_crpm = copter.rpm_sensor.get_rpm(0) / 100; // RPM in centi revolutions per minute
-    float curr_rpm = 4000;
+    float curr_rpm = copter.rpm_sensor.get_rpm(0) / 100; // RPM in centi revolutions per minute
+//    float curr_rpm = 4000;
 
     // Get the pilot input percentage
     float throttle_stick_percent = channel_throttle->percent_input();
