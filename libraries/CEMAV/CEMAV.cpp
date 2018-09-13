@@ -140,17 +140,17 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rpm(10, 0, 0, 0.5, 5, dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap1, _f1_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap2, _f2_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap3, _f3_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap4, _f4_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap5, _f5_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap6, _f6_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap7, _f7_scale);
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap8, _f8_scale);
-//
-//    SRV_Channels::set_angle(SRV_Channel::k_cemav_rudder, _r_scale);
-//    SRV_Channels::set_range(SRV_Channel::k_cemav_throttle, _t_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap1, _f1_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap2, _f2_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap3, _f3_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap4, _f4_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap5, _f5_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap6, _f6_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap7, _f7_scale);
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap8, _f8_scale);
+
+    SRV_Channels::set_angle(SRV_Channel::k_cemav_rudder, _r_scale);
+    SRV_Channels::set_range(SRV_Channel::k_cemav_throttle, _t_scale);
     SRV_Channels::update_aux_servo_function();
 }
 
@@ -186,7 +186,7 @@ float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 //
 float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
 
-	return ( throttle_stick_percent/ 100.0) * _max_rpm ;
+	return ( (float) throttle_stick_percent/ 100.0) * _max_rpm ;
 }
 
 /* Define functions to compute the PWM values for the inner control loop for
@@ -207,8 +207,8 @@ float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
     float error = des_rpm - curr_rpm;
     _pid_rpm.set_input_filter_d(error);
 
-    float du_rpm = _pid_rpm.get_pid();
+    return _pid_rpm.get_pid();
 
-    return curr_rpm + du_rpm / _max_rpm;
+
 }
 

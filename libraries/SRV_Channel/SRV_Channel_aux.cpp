@@ -122,6 +122,22 @@ void SRV_Channel::aux_servo_function_setup(void)
         // fixed wing throttle
         set_range(100);
         break;
+    case k_cemav_flap1:
+    case k_cemav_flap2:
+    case k_cemav_flap3:
+    case k_cemav_flap4:
+    case k_cemav_flap5:
+    case k_cemav_flap6:
+    case k_cemav_flap7:
+    case k_cemav_flap8:
+        set_angle(9000);
+        break;
+    case k_cemav_rudder:
+        set_angle(720);
+        break;
+    case k_cemav_throttle:
+        set_range(9000);
+        break;
     default:
         break;
     }
