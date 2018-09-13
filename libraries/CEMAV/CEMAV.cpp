@@ -126,7 +126,8 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         AP_GROUPINFO("FL8_SCALE", 11, CEMAV, _f8_scale, 9000),
         AP_GROUPINFO("RUD_SCALE", 12, CEMAV, _r_scale, 720),
         AP_GROUPINFO("THR_SCALE", 13, CEMAV, _t_scale, 9000),
-        AP_GROUPINFO("MIN_RPM", 14, CEMAV, _min_rpm, 2000.0f),
+        AP_GROUPINFO("RPM_SCALE", 14, CEMAV, _err_scale, 1000.0f),
+        AP_GROUPINFO("THR_CHG_BD", 15, CEMAV, _throttle_change, 0.1f),
 
 
 
@@ -186,11 +187,9 @@ float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 //}
 //
 float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
-    if (throttle_stick_percent < 10) {
-        return 0;
-    } else {
-        return ( (float) throttle_stick_percent/ 100.0) * (_max_rpm - _min_rpm) + _min_rpm  ;
-    }
+
+    return ( (float) throttle_stick_percent/ 100.0) * _max_rpm;
+
 }
 
 /* Define functions to compute the PWM values for the inner control loop for
@@ -199,7 +198,7 @@ float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
 float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
     // Get the current yaw rate
     float curr_yaw_rate = _ahrs.get_gyro()[2] * RAD_TO_DEG;
-//    float curr_yaw_rate = _ahrs.yaw* RAD_TO_DEG;
+
     // Get the desired yaw rate
     float error = des_yaw_rate - curr_yaw_rate;
     _pid_rate_yaw.set_input_filter_d(error);
@@ -208,7 +207,7 @@ float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
 }
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
-    float error = des_rpm - curr_rpm;
+    float error = (des_rpm - curr_rpm) / _err_scale;
     _pid_rpm.set_input_filter_all(error);
 
     return _pid_rpm.get_pid();
