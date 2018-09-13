@@ -63,11 +63,11 @@ void Copter::ModeCoanda::run()
     float cemav_max_rpm = cemav->get_max_rpm(); // The delta rpm is normalized by cemav rpm
 
     // Convert du_rpm to a PWM change,
-    uint16_t thr_min_pwm = SRV_Channels::srv_channel(0)->get_output_min();
-    uint16_t thr_max_pwm = SRV_Channels::srv_channel(0)->get_output_max();
+    uint16_t thr_min_pwm = SRV_Channels::srv_channel(5)->get_output_min();
+    uint16_t thr_max_pwm = SRV_Channels::srv_channel(5)->get_output_max();
 
     // Get the rpm fraction then scale it by the pwm range, finally constrain the change in throttle to be between 100
-    int du_pwm = constrain_value((du_rpm / cemav_max_rpm) * (thr_max_pwm - thr_min_pwm), (float)-100, (float)100.0);
+    int du_pwm = constrain_value((du_rpm / cemav_max_rpm) * (thr_max_pwm - thr_min_pwm), (float)-10, (float)10);
 
     // Make sure that the new throttle value is greater than 0 before casting to uint16
     int new_thr_pwm = constrain_value((int) (current_throttle_PWM + du_pwm), 0, (int)thr_max_pwm);
