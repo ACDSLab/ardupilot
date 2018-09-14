@@ -26,6 +26,22 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Advanced
         AP_GROUPINFO("MAX_RPM", 1, CEMAV, _max_rpm, 9000.0f),
 
+        // @Param: RPM_SC
+        // @DisplayName: Rotor speed control scaling
+        // @Description: The control output from the PID controller is scaled by this value so that controller outputs are bounded before being converted to PWM
+        // @Range: 1 10000
+        // @Increment 10
+        // @User: Advanced
+        AP_GROUPINFO("RPM_SC", 2, CEMAV, _rpm_control_scale, 1000.0f),
+
+        // @Param: YAW_RAT_SC
+        // @DisplayName: Yaw rate control scaling
+        // @Description: The control output from the PID controller is normalized by this number so that resulting PWM values are bounded.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("YAW_RAT_SC", 3, CEMAV, _yaw_rate_control_scale, 720.0f),
+
 
         // @Param: RAT_YAW_P
         // @DisplayName: Yaw axis rate controller P gain
@@ -70,23 +86,23 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Increment: 1
         // @Units: Hz
         // @User: Standard
-        AP_SUBGROUPINFO(_pid_rate_yaw, "RAT_YAW_", 2, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_rate_yaw, "RAT_YAW_", 4, CEMAV, AC_PID),
 
-        // @Param: RAT_YAW_P
+        // @Param: RPM_P
         // @DisplayName: Yaw axis rate controller P gain
         // @Description: Yaw axis rate controller P gain.  Converts the difference between desired yaw rate and actual yaw rate into a motor speed output
         // @Range: 0.10 2.50
         // @Increment: 0.005
         // @User: Standard
 
-        // @Param: RAT_YAW_I
+        // @Param: RPM_I
         // @DisplayName: Yaw axis rate controller I gain
         // @Description: Yaw axis rate controller I gain.  Corrects long-term difference in desired yaw rate vs actual yaw rate
         // @Range: 0.010 1.0
         // @Increment: 0.01
         // @User: Standard
 
-        // @Param: RAT_YAW_IMAX
+        // @Param: RPM_IMAX
         // @DisplayName: Yaw axis rate controller I gain maximum
         // @Description: Yaw axis rate controller I gain maximum.  Constrains the maximum motor output that the I gain will output
         // @Range: 0 1
@@ -94,40 +110,28 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Units: %
         // @User: Standard
 
-        // @Param: RAT_YAW_D
+        // @Param: RPM_D
         // @DisplayName: Yaw axis rate controller D gain
         // @Description: Yaw axis rate controller D gain.  Compensates for short-term change in desired yaw rate vs actual yaw rate
         // @Range: 0.000 0.02
         // @Increment: 0.001
         // @User: Standard
 
-        // @Param: RAT_YAW_FF
+        // @Param: RPM_FF
         // @DisplayName: Yaw axis rate controller feed forward
         // @Description: Yaw axis rate controller feed forward
         // @Range: 0 0.5
         // @Increment: 0.001
         // @User: Standard
 
-        // @Param: RAT_YAW_FILT
+        // @Param: RPM_FILT
         // @DisplayName: Yaw axis rate controller input frequency in Hz
         // @Description: Yaw axis rate controller input frequency in Hz
         // @Range: 1 10
         // @Increment: 1
         // @Units: Hz
         // @User: Standard
-        AP_SUBGROUPINFO(_pid_rpm, "RPM_", 3, CEMAV, AC_PID),
-		AP_GROUPINFO("FL1_SCALE", 4, CEMAV, _f1_scale, 9000),
-		AP_GROUPINFO("FL2_SCALE", 5, CEMAV, _f2_scale, 9000),
-		AP_GROUPINFO("FL3_SCALE", 6, CEMAV, _f3_scale, 9000),
-		AP_GROUPINFO("FL4_SCALE", 7, CEMAV, _f4_scale, 9000),
-		AP_GROUPINFO("FL5_SCALE", 8, CEMAV, _f5_scale, 9000),
-		AP_GROUPINFO("FL6_SCALE", 9, CEMAV, _f6_scale, 9000),
-        AP_GROUPINFO("FL7_SCALE", 10, CEMAV, _f7_scale, 9000),
-        AP_GROUPINFO("FL8_SCALE", 11, CEMAV, _f8_scale, 9000),
-        AP_GROUPINFO("RUD_SCALE", 12, CEMAV, _r_scale, 720),
-        AP_GROUPINFO("THR_SCALE", 13, CEMAV, _t_scale, 9000),
-        AP_GROUPINFO("RPM_SCALE", 14, CEMAV, _err_scale, 1000.0f),
-        AP_GROUPINFO("THR_CHG_BD", 15, CEMAV, _throttle_change, 0.1f),
+        AP_SUBGROUPINFO(_pid_rpm, "RPM_", 5, CEMAV, AC_PID),
 
 
 
@@ -142,18 +146,7 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rpm(10, 0, 0, 0.5, 5, dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap1, _f1_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap2, _f2_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap3, _f3_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap4, _f4_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap5, _f5_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap6, _f6_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap7, _f7_scale);
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_flap8, _f8_scale);
 
-    SRV_Channels::set_angle(SRV_Channel::k_cemav_rudder, _r_scale);
-    SRV_Channels::set_range(SRV_Channel::k_cemav_throttle, _t_scale);
-    SRV_Channels::update_aux_servo_function();
 }
 
 
@@ -201,16 +194,16 @@ float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
 
     // Get the desired yaw rate
     float error = des_yaw_rate - curr_yaw_rate;
-    _pid_rate_yaw.set_input_filter_d(error);
+    _pid_rate_yaw.set_input_filter_d(error); // Filter the error signal
 
-    return _pid_rate_yaw.get_pid();
+    return (_pid_rate_yaw.get_pid()) / _yaw_rate_control_scale; // Compute then scale the output control
 }
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
     float error = (des_rpm - curr_rpm);
     _pid_rpm.set_input_filter_all(error);
 
-    return _pid_rpm.get_pid();
+    return (_pid_rpm.get_pid()) / _rpm_control_scale; // Compute then scale the output control
 
 
 }

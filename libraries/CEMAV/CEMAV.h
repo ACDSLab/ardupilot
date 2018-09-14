@@ -46,10 +46,6 @@ public:
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
 
-    float get_max_rpm() {return _max_rpm;}
-    float get_throttle_change() {return _throttle_change;}
-    float get_max_yaw_ds() {return _max_yaw_ds;}
-
 private:
 
     // References to external libraries
@@ -57,23 +53,16 @@ private:
 
     // Yaw Rate Parameters
     AP_Float _max_yaw_ds; // Maximum yaw rate in degrees per second
-    AP_Float _max_rpm; // Maximum rpm in rev per minute
-    AP_Float _err_scale; // Scaling the error before putting it into the PID class
-    AP_Float _throttle_change;
+    AP_Float _yaw_rate_control_scale; // Scaling the error before putting it into the PID class
 
+    // RPM Parameters
+    AP_Float _max_rpm; // Maximum angular speed of the motor in revolutions per minute
+    AP_Float _rpm_control_scale; // Scaling for RPM controller before transforming into a pwm value
+
+    // PID controllers
     AC_PID   _pid_rate_yaw; // Parameters for AC_PID class yaw channel
     AC_PID   _pid_rpm;
-	AP_Int16 _f1_scale;
-	AP_Int16 _f2_scale;
-	AP_Int16 _f3_scale;
-	AP_Int16 _f4_scale;
-	AP_Int16 _f5_scale;
-	AP_Int16 _f6_scale;
-    AP_Int16 _f7_scale;
-    AP_Int16 _f8_scale;
 
-    AP_Int16 _r_scale;
-    AP_Int16 _t_scale;
 
 };
 
