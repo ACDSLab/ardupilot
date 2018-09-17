@@ -312,7 +312,7 @@ float CEMAV::flap_angle_to_pwm(float angle, uint8_t flap_number) {
 
 }
 
-float CEMAV::fishtail_angle_to_pwm(float angle)
+float CEMAV::fishtail_angle_to_pwm(float angle) {
 
 	float pwm = 0;
 
