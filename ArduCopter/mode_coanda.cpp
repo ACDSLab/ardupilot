@@ -45,27 +45,29 @@ void Copter::ModeCoanda::run()
 	float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm); // -720 deg per sec to 720
 
     // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
-    float u_yaw_rate = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) / _yaw_control_scale
+    float u_rudder_angle = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) / _yaw_control_scale
 
     // Convert u_yaw rate to a PWM.
 //    uint16_t yaw_r_min_pwm = SRV_Channels::srv_channel(5)->get_output_min();
-    uint16_t yaw_r_max_pwm = SRV_Channels::srv_channel(5)->get_output_max();
-    uint16_t yaw_r_trim_pwm = SRV_Channels::srv_channel(5)->get_trim();
+//    uint16_t yaw_r_max_pwm = SRV_Channels::srv_channel(5)->get_output_max();
+//    uint16_t yaw_r_trim_pwm = SRV_Channels::srv_channel(5)->get_trim();
 
     // Get the rpm fraction then scale it by the pwm range, finally constrain the change in throttle to be between 100
-    float u_yaw_rate_bounded = -1*constrain_value(u_yaw_rate, (float)-1, (float) 1); // Bound the yaw rate
+//    float u_yaw_rate_bounded = -1*constrain_value(u_yaw_rate, (float)-1, (float) 1); // Bound the yaw rate
 
     // Bounded yaw rate will never result in a negative float being converted to unsigned integer.
-    uint16_t u_yaw_rate_pwm = u_yaw_rate_bounded* (yaw_r_max_pwm - yaw_r_trim_pwm) + yaw_r_trim_pwm;
+//    uint16_t u_yaw_rate_pwm = u_yaw_rate_bounded* (yaw_r_max_pwm - yaw_r_trim_pwm) + yaw_r_trim_pwm;
 
     // Set rudder angle pwm
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, u_yaw_rate_pwm);
+//    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, u_yaw_rate_pwm);
+	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
+
 
 
     /**************************
     * RPM Controller
     ***************************/
-    // Get rpm value from RPM pin (the sensor is in AP_RPM)
+/*     // Get rpm value from RPM pin (the sensor is in AP_RPM)
     float curr_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
     // Get the pilot input percentage
@@ -85,7 +87,9 @@ void Copter::ModeCoanda::run()
     uint16_t u_pwm = constrain_value((int) (u_rpm * (thr_max_pwm - thr_min_pwm) + thr_min_pwm), (int)thr_min_pwm, (int)thr_max_pwm);
 
     // Set the throttle pwm
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, u_pwm);
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, u_pwm);*/
+	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+
 
     /**************************
     * Roll and Pitch Pass-through
