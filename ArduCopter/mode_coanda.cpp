@@ -108,7 +108,7 @@ void Copter::ModeCoanda::run()
     float des_q = cemav->get_pilot_des_q(q_stick_norm); //
     float des_p = cemav->get_pilot_des_p(p_stick_norm); //
     //
-    uint16_t[4] flap_pwms;
+    uint16_t flap_pwms[4];
     cemav->compute_control_pq(des_p,des_q,flap_pwms);
 
     /**************************

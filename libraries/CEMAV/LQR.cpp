@@ -49,7 +49,7 @@ const AP_Param::GroupInfo LQR::var_info[] = {
         AP_GROUPEND
 };
 
-void compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, uint16_t (&flap_pwms)[4]) {
+void LQR::compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, uint16_t (&flap_pwms)[4]) {
   float err_p = des_p - cur_p;
   float err_q = des_q - cur_q;
   flap_pwms[0] = _lq_11*err_p + _lq_12*err_q;

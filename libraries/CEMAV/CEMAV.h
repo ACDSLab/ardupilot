@@ -70,6 +70,8 @@ private:
     // Yaw Rate Parameters
     AP_Float _max_yaw_ds; // Maximum yaw rate in degrees per second
     AP_Float _yaw_rate_control_scale; // Scaling the error before putting it into the PID class
+    AP_Float _max_p_ds;
+    AP_Float _max_q_ds;
 
     // RPM Parameters
     AP_Float _max_rpm; // Maximum angular speed of the motor in revolutions per minute
