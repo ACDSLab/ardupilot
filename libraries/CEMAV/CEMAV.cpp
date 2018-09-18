@@ -140,7 +140,23 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_SUBGROUPINFO(_rudder, "RUD_", 10, CEMAV, Rudder),
 
+        // @Param: MAX_P_DS
+        // @DisplayName: Maximum p angular velocity in deg/s
+        // @Description: Maximum p angular velocity in deg/s. Max stick input commands max yaw rate.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("MAX_P_DS", 11, CEMAV, _max_p_ds, 720.0f),
 
+        // @Param: MAX_Q_DS
+        // @DisplayName: Maximum q angular velocity in deg/s
+        // @Description: Maximum q angular velocity in deg/s. Max stick input commands max yaw rate.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("MAX_Q_DS", 12, CEMAV, _max_q_ds, 720.0f),
+
+        AP_SUBGROUPINFO(_lqr, "PQ_", 13, CEMAV, LQR),
 
 		AP_GROUPEND
 
@@ -166,16 +182,16 @@ float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 	return norm_stick_input * _max_yaw_ds;
 }
 
-//float CEMAV::get_pilot_des_p_rate(int16_t norm_stick_input) {
-//
-//	return norm_stick_input  * CEMAV_MAX_P_RATE;
-//}
-//
-//float CEMAV::get_pilot_des_q_rate(int16_t norm_stick_input) {
-//
-//	return norm_stick_input  * CEMAV_MAX_Q_RATE;
-//}
-//
+float CEMAV::get_pilot_des_p(float norm_stick_input) {
+
+	return norm_stick_input  * _max_p_ds;
+}
+
+float CEMAV::get_pilot_des_q(float norm_stick_input) {
+
+	return norm_stick_input  * _max_q_ds;
+}
+
 //float CEMAV::get_pilot_des_pitch(int16_t norm_stick_input) {
 //
 //	return norm_stick_input  * CEMAV_MAX_PITCH;
@@ -236,4 +252,10 @@ uint16_t CEMAV::flap_angle_to_pwm(float angle, int flap_number) {
 
 uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
     return _rudder.rudder_angle_to_pwm(angle);
+}
+
+void compute_control_pq(float des_p, float des_q, uint16_t (&flap_pwms)[4]) {
+  float cur_p = _ahrs.get_gyro()[0] * RAD_TO_DEG;
+  float cur_q = _ahrs.get_gyro()[1] * RAD_TO_DEG;
+  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_pwms);
 }

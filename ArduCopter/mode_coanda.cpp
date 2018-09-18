@@ -31,7 +31,7 @@ void Copter::ModeCoanda::run()
 	    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
         return;
     }
-	
+
 	// clear landing flag
     set_land_complete(false);
 
@@ -53,8 +53,7 @@ void Copter::ModeCoanda::run()
     uint16_t yaw_r_trim_pwm = SRV_Channels::srv_channel(5)->get_trim();
 
     // Get the rpm fraction then scale it by the pwm range, finally constrain the change in throttle to be between 100
-    float u_yaw_rate_bounded = constrain_value(u_yaw_rate, (float)-1, (float) 1); // Bound the yaw rate
-
+    float u_yaw_rate_bounded = -1*constrain_value(u_yaw_rate, (float)-1, (float) 1); // Bound the yaw rate
 
     // Bounded yaw rate will never result in a negative float being converted to unsigned integer.
     uint16_t u_yaw_rate_pwm = u_yaw_rate_bounded* (yaw_r_max_pwm - yaw_r_trim_pwm) + yaw_r_trim_pwm;
@@ -92,13 +91,25 @@ void Copter::ModeCoanda::run()
     * Roll and Pitch Pass-through
     ***************************/
     // Servo Cal Flaps
-    float roll_flap_input = 90*channel_roll->norm_input_dz();
-    float pitch_flap_input = 90*channel_pitch->norm_input_dz();
+    // float roll_flap_input = 90*channel_roll->norm_input_dz();
+    // float pitch_flap_input = 90*channel_pitch->norm_input_dz();
+    //
+    // SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(roll_flap_input, 1));
+    // SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(pitch_flap_input, 2));
+    // SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1*roll_flap_input, 3));
+    // SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 4));
 
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(roll_flap_input, 1));
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(pitch_flap_input, 2));
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1*roll_flap_input, 3));
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 4));
+    /**************************
+    * Roll and Pitch LQR
+    ***************************/
+    // Get the pilot input from pitch channel
+    float q_stick_norm = channel_pitch->norm_input_dz();  // -1 to 1
+    float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1
+    float des_q = cemav->get_pilot_des_q(q_stick_norm); //
+    float des_p = cemav->get_pilot_des_p(p_stick_norm); //
+    //
+    uint16_t[4] flap_pwms;
+    cemav->compute_control_pq(des_p,des_q,flap_pwms);
 
     /**************************
     * Debug printing
@@ -107,4 +118,3 @@ void Copter::ModeCoanda::run()
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
 
 }
-

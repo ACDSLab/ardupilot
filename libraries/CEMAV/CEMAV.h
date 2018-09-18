@@ -13,7 +13,7 @@
 #include <AC_PID/AC_PID.h>  // Get the PID controller class
 #include <SRV_Channel/SRV_Channel.h> // Set servo angle max
 #include <CEMAV/Servo_Cal.h>
-
+#include <CEMAV/LQR.h>
 
 #ifndef CEMAV_H_
 #define CEMAV_H_
@@ -28,8 +28,8 @@ public:
 
     // Functions to get pilot desired input given system parameters and normalized stick input
     float get_pilot_des_yaw_rate(float norm_stick_input);// { return stick_input / MAX_YAW_STICK_INPUT * CEMAV_MAX_YAW_RATE; };
-//	float get_pilot_des_p_rate(int16_t norm_stick_input);  // X axis body rate desired
-//	float get_pilot_des_q_rate(int16_t norm_stick_input);  // Y axis body rate desired
+	float get_pilot_des_p(float norm_stick_input);  // X axis body rate desired
+	float get_pilot_des_q(float norm_stick_input);  // Y axis body rate desired
 //	float get_pilot_des_pitch(int16_t norm_stick_input);
 //	float get_pilot_des_roll(int16_t norm_stick_input);
 	float get_pilot_des_rpm(uint8_t throttle_stick_percent);
@@ -37,6 +37,7 @@ public:
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
     float compute_rpm_control(float des_rpm, float curr_rpm);
+    void compute_control_pq(float des_p, float des_q, uint16_t (&flap_pwms)[4]);
 
 
     // pid accessors
@@ -85,6 +86,8 @@ private:
     Flap _flap4;
 
     Rudder _rudder;
+
+    LQR _lqr;
 
 
 };
