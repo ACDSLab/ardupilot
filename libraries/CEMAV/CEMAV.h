@@ -37,7 +37,7 @@ public:
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
     float compute_rpm_control(float des_rpm, float curr_rpm);
-    void compute_control_pq(float des_p, float des_q, uint16_t (&flap_pwms)[4]);
+    void compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]);
 
 
     // pid accessors

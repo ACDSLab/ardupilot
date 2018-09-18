@@ -15,7 +15,7 @@ class LQR {
 public:
     static const struct AP_Param::GroupInfo var_info[];
 
-    void compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, uint16_t (&flap_pwms)[4]);
+    void compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, float (&flap_angles)[4]);
 
 
 protected:

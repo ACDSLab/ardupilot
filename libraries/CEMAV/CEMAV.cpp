@@ -254,8 +254,8 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
     return _rudder.rudder_angle_to_pwm(angle);
 }
 
-void CEMAV::compute_control_pq(float des_p, float des_q, uint16_t (&flap_pwms)[4]) {
+void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]) {
   float cur_p = _ahrs.get_gyro()[0] * RAD_TO_DEG;
   float cur_q = _ahrs.get_gyro()[1] * RAD_TO_DEG;
-  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_pwms);
+  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
 }
