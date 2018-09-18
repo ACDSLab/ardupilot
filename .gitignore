@@ -99,3 +99,4 @@ config.mk
 .gdbinit
 /.vscode
 /.idea
+CMakeLists.txt

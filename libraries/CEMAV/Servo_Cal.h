@@ -5,7 +5,7 @@
 
 #include <AP_Common/AP_Common.h>
 #include <AP_Param/AP_Param.h>
-#include <AP_Math/AP_math.h>
+#include <AP_Math/AP_Math.h>
 
 
 #ifndef ARDUPILOT_SERVO_CAL_H

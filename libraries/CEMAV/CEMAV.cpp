@@ -133,6 +133,13 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Standard
         AP_SUBGROUPINFO(_pid_rpm, "RPM_", 5, CEMAV, AC_PID),
 
+        AP_SUBGROUPINFO(_flap1, "FL1_", 6, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap2, "FL2_", 7, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap3, "FL3_", 8, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap4, "FL4_", 9, CEMAV, Flap),
+
+        AP_SUBGROUPINFO(_rudder, "RUD_", 10, CEMAV, Rudder),
+
 
 
 		AP_GROUPEND
@@ -206,148 +213,148 @@ float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
     return (_pid_rpm.get_pid()) / _rpm_control_scale; // Compute then scale the output control
 }
 
-float CEMAV::flap_angle_to_pwm(float angle, uint8_t flap_number) {
-
-	float pwm = 0;
-	
-	if(flap_number==1) {
-		float pwm0deg =	_pwm0deg_1;	
-		float pwm15deg = _pwm15deg_1;
-		float pwm30deg = _pwm30deg_1;
-		float pwm45deg = _pwm45deg_1;
-		float pwm60deg = _pwm60deg_1;
-		float pwm75deg = _pwm75deg_1;
-		float pwm90deg = _pwm90deg_1;
-	} else if (flap_number==2) {
-		float pwm0deg =	_pwm0deg_2;	
-		float pwm15deg = _pwm15deg_2;
-		float pwm30deg = _pwm30deg_2;
-		float pwm45deg = _pwm45deg_2;
-		float pwm60deg = _pwm60deg_2;
-		float pwm75deg = _pwm75deg_2;
-		float pwm90deg = _pwm90deg_2;
-	} else if (flap_number==3) {
-		float pwm0deg =	_pwm0deg_3;
-		float pwm15deg = _pwm15deg_3;
-		float pwm30deg = _pwm30deg_3;
-		float pwm45deg = _pwm45deg_3;
-		float pwm60deg = _pwm60deg_3;
-		float pwm75deg = _pwm75deg_3;
-		float pwm90deg = _pwm90deg_3;
-	} else if (flap_number==4) {
-		float pwm0deg =	_pwm0deg_4;	
-		float pwm15deg = _pwm15deg_4;
-		float pwm30deg = _pwm30deg_4;
-		float pwm45deg = _pwm45deg_4;
-		float pwm60deg = _pwm60deg_4;
-		float pwm75deg = _pwm75deg_4;
-		float pwm90deg = _pwm90deg_4;
-	} else if (flap_number==5) {
-		float pwm0deg =	_pwm0deg_5;	
-		float pwm15deg = _pwm15deg_5;
-		float pwm30deg = _pwm30deg_5;
-		float pwm45deg = _pwm45deg_5;
-		float pwm60deg = _pwm60deg_5;
-		float pwm75deg = _pwm75deg_5;
-		float pwm90deg = _pwm90deg_5;
-	} else if (flap_number==6) {
-		float pwm0deg =	_pwm0deg_6;	
-		float pwm15deg = _pwm15deg_6;
-		float pwm30deg = _pwm30deg_6;
-		float pwm45deg = _pwm45deg_6;
-		float pwm60deg = _pwm60deg_6;
-		float pwm75deg = _pwm75deg_6;
-		float pwm90deg = _pwm90deg_6;
-	} else if (flap_number==7) {
-		float pwm0deg =	_pwm0deg_7;	
-		float pwm15deg = _pwm15deg_7;
-		float pwm30deg = _pwm30deg_7;
-		float pwm45deg = _pwm45deg_7;
-		float pwm60deg = _pwm60deg_7;
-		float pwm75deg = _pwm75deg_7;
-		float pwm90deg = _pwm90deg_7;
-	} else if (flap_number==8) {
-		float pwm0deg =	_pwm0deg_8;	
-		float pwm15deg = _pwm15deg_8;
-		float pwm30deg = _pwm30deg_8;
-		float pwm45deg = _pwm45deg_8;
-		float pwm60deg = _pwm60deg_8;
-		float pwm75deg = _pwm75deg_8;
-		float pwm90deg = _pwm90deg_8;
-	}
-
-	if (angle == 0) {
-		pwm = pwm0deg;
-	} else if (angle == 15) {
-		pwm = pwm15deg;
-	} else if (angle == 30) {
-		pwm = pwm30deg;
-	} else if (angle == 45) {
-		pwm = pwm45deg;
-	} else if (angle == 60) {
-		pwm = pwm60deg;
-	} else if (angle == 75) {
-		pwm = pwm75deg;
-	} else if (angle == 90) {
-		pwm = pwm90deg;
-	} else if (angle > 0 && angle < 15) {
-		pwm = pwm0deg + angle/15*(pwm15deg - pwm0deg);
-	} else if (angle > 15 && angle < 30) {
-		pwm = pwm15deg + (angle - 15)/15*(pwm30deg - pwm15deg);
-	} else if (angle > 30 && angle < 45) {
-		pwm = pwm30deg + (angle - 30)/15 * (pwm45deg - pwm30deg);
-	} else if (angle > 45 && angle < 60) {
-		pwm = pwm45deg + (angle - 45)/15 * (pwm60deg - pwm45deg);
-	} else if (angle > 60 && angle < 75) {
-		pwm = pwm60deg + (angle - 60)/15 * (pwm75deg - pwm60deg);
-	} else if (angle > 75 && angle < 90) {
-		pwm = pwm75deg + (angle - 75)/15 * (pwm90deg - pwm75deg);
-	} else if (angle < 0) {
-		pwm = pwm0deg;
-	} else if (angle > 90) {
-		pwm = pwm90deg;
-	} 
-
-	return pwm;
-
-}
-
-float CEMAV::fishtail_angle_to_pwm(float angle) {
-
-	float pwm = 0;
-
-	if (angle == -40) {
-		pwm = _pwm_n40deg_ft;
-	} else if (angle == -30) {
-		pwm = _pwm_n30deg_ft;
-	} else if (angle == -15) {
-		pwm = _pwm_n15deg_ft;
-	} else if (angle == 0) {
-		pwm = _pwm_0deg_ft;
-	} else if (angle == 15) {
-		pwm = _pwm_15deg_ft;
-	} else if (angle == 30) {
-		pwm = _pwm_30deg_ft;
-	} else if (angle == 40) {
-		pwm = _pwm_40deg_ft;
-	} else if (angle > -40 && angle < -30) {
-		pwm = _pwm_n40deg_ft + angle/10*(_pwm_n30deg_ft - _pwm_n40deg_ft);
-	} else if (angle > -30 && angle < -15) {
-		pwm = _pwm_n30deg_ft + angle/15*(_pwm_n15deg_ft - _pwm_n30deg_ft);
-	} else if (angle > -15 && angle < 0) {
-		pwm = _pwm_n15deg_ft + angle/15*(_pwm_n0deg_ft - _pwm_n15deg_ft);
-	} else if (angle > 0 && angle < 15) {
-		pwm = _pwm_0deg_ft + angle/15*(_pwm_15deg_ft - _pwm_0deg_ft);
-	} else if (angle > 15 && angle < 30) {
-		pwm = _pwm_15deg_ft + angle/15*(_pwm_30deg_ft - _pwm_15deg_ft);
-	} else if (angle > 30 && angle < 40) {
-		pwm = _pwm_30deg_ft + angle/10*(_pwm_40deg_ft - _pwm_30deg_ft);
-	} else if (angle < -40) {
-		pwm = _pwm_n40deg_ft;
-	} else if (angle > 40) {
-		pwm = _pwm_40deg_ft;
-	} 
-
-	return pwm;
-
-}
+//float CEMAV::flap_angle_to_pwm(float angle, uint8_t flap_number) {
+//
+//	float pwm = 0;
+//
+//	if(flap_number==1) {
+//		float pwm0deg =	_pwm0deg_1;
+//		float pwm15deg = _pwm15deg_1;
+//		float pwm30deg = _pwm30deg_1;
+//		float pwm45deg = _pwm45deg_1;
+//		float pwm60deg = _pwm60deg_1;
+//		float pwm75deg = _pwm75deg_1;
+//		float pwm90deg = _pwm90deg_1;
+//	} else if (flap_number==2) {
+//		float pwm0deg =	_pwm0deg_2;
+//		float pwm15deg = _pwm15deg_2;
+//		float pwm30deg = _pwm30deg_2;
+//		float pwm45deg = _pwm45deg_2;
+//		float pwm60deg = _pwm60deg_2;
+//		float pwm75deg = _pwm75deg_2;
+//		float pwm90deg = _pwm90deg_2;
+//	} else if (flap_number==3) {
+//		float pwm0deg =	_pwm0deg_3;
+//		float pwm15deg = _pwm15deg_3;
+//		float pwm30deg = _pwm30deg_3;
+//		float pwm45deg = _pwm45deg_3;
+//		float pwm60deg = _pwm60deg_3;
+//		float pwm75deg = _pwm75deg_3;
+//		float pwm90deg = _pwm90deg_3;
+//	} else if (flap_number==4) {
+//		float pwm0deg =	_pwm0deg_4;
+//		float pwm15deg = _pwm15deg_4;
+//		float pwm30deg = _pwm30deg_4;
+//		float pwm45deg = _pwm45deg_4;
+//		float pwm60deg = _pwm60deg_4;
+//		float pwm75deg = _pwm75deg_4;
+//		float pwm90deg = _pwm90deg_4;
+//	} else if (flap_number==5) {
+//		float pwm0deg =	_pwm0deg_5;
+//		float pwm15deg = _pwm15deg_5;
+//		float pwm30deg = _pwm30deg_5;
+//		float pwm45deg = _pwm45deg_5;
+//		float pwm60deg = _pwm60deg_5;
+//		float pwm75deg = _pwm75deg_5;
+//		float pwm90deg = _pwm90deg_5;
+//	} else if (flap_number==6) {
+//		float pwm0deg =	_pwm0deg_6;
+//		float pwm15deg = _pwm15deg_6;
+//		float pwm30deg = _pwm30deg_6;
+//		float pwm45deg = _pwm45deg_6;
+//		float pwm60deg = _pwm60deg_6;
+//		float pwm75deg = _pwm75deg_6;
+//		float pwm90deg = _pwm90deg_6;
+//	} else if (flap_number==7) {
+//		float pwm0deg =	_pwm0deg_7;
+//		float pwm15deg = _pwm15deg_7;
+//		float pwm30deg = _pwm30deg_7;
+//		float pwm45deg = _pwm45deg_7;
+//		float pwm60deg = _pwm60deg_7;
+//		float pwm75deg = _pwm75deg_7;
+//		float pwm90deg = _pwm90deg_7;
+//	} else if (flap_number==8) {
+//		float pwm0deg =	_pwm0deg_8;
+//		float pwm15deg = _pwm15deg_8;
+//		float pwm30deg = _pwm30deg_8;
+//		float pwm45deg = _pwm45deg_8;
+//		float pwm60deg = _pwm60deg_8;
+//		float pwm75deg = _pwm75deg_8;
+//		float pwm90deg = _pwm90deg_8;
+//	}
+//
+//	if (angle == 0) {
+//		pwm = pwm0deg;
+//	} else if (angle == 15) {
+//		pwm = pwm15deg;
+//	} else if (angle == 30) {
+//		pwm = pwm30deg;
+//	} else if (angle == 45) {
+//		pwm = pwm45deg;
+//	} else if (angle == 60) {
+//		pwm = pwm60deg;
+//	} else if (angle == 75) {
+//		pwm = pwm75deg;
+//	} else if (angle == 90) {
+//		pwm = pwm90deg;
+//	} else if (angle > 0 && angle < 15) {
+//		pwm = pwm0deg + angle/15*(pwm15deg - pwm0deg);
+//	} else if (angle > 15 && angle < 30) {
+//		pwm = pwm15deg + (angle - 15)/15*(pwm30deg - pwm15deg);
+//	} else if (angle > 30 && angle < 45) {
+//		pwm = pwm30deg + (angle - 30)/15 * (pwm45deg - pwm30deg);
+//	} else if (angle > 45 && angle < 60) {
+//		pwm = pwm45deg + (angle - 45)/15 * (pwm60deg - pwm45deg);
+//	} else if (angle > 60 && angle < 75) {
+//		pwm = pwm60deg + (angle - 60)/15 * (pwm75deg - pwm60deg);
+//	} else if (angle > 75 && angle < 90) {
+//		pwm = pwm75deg + (angle - 75)/15 * (pwm90deg - pwm75deg);
+//	} else if (angle < 0) {
+//		pwm = pwm0deg;
+//	} else if (angle > 90) {
+//		pwm = pwm90deg;
+//	}
+//
+//	return pwm;
+//
+//}
+//
+//float CEMAV::fishtail_angle_to_pwm(float angle) {
+//
+//	float pwm = 0;
+//
+//	if (angle == -40) {
+//		pwm = _pwm_n40deg_ft;
+//	} else if (angle == -30) {
+//		pwm = _pwm_n30deg_ft;
+//	} else if (angle == -15) {
+//		pwm = _pwm_n15deg_ft;
+//	} else if (angle == 0) {
+//		pwm = _pwm_0deg_ft;
+//	} else if (angle == 15) {
+//		pwm = _pwm_15deg_ft;
+//	} else if (angle == 30) {
+//		pwm = _pwm_30deg_ft;
+//	} else if (angle == 40) {
+//		pwm = _pwm_40deg_ft;
+//	} else if (angle > -40 && angle < -30) {
+//		pwm = _pwm_n40deg_ft + angle/10*(_pwm_n30deg_ft - _pwm_n40deg_ft);
+//	} else if (angle > -30 && angle < -15) {
+//		pwm = _pwm_n30deg_ft + angle/15*(_pwm_n15deg_ft - _pwm_n30deg_ft);
+//	} else if (angle > -15 && angle < 0) {
+//		pwm = _pwm_n15deg_ft + angle/15*(_pwm_n0deg_ft - _pwm_n15deg_ft);
+//	} else if (angle > 0 && angle < 15) {
+//		pwm = _pwm_0deg_ft + angle/15*(_pwm_15deg_ft - _pwm_0deg_ft);
+//	} else if (angle > 15 && angle < 30) {
+//		pwm = _pwm_15deg_ft + angle/15*(_pwm_30deg_ft - _pwm_15deg_ft);
+//	} else if (angle > 30 && angle < 40) {
+//		pwm = _pwm_30deg_ft + angle/10*(_pwm_40deg_ft - _pwm_30deg_ft);
+//	} else if (angle < -40) {
+//		pwm = _pwm_n40deg_ft;
+//	} else if (angle > 40) {
+//		pwm = _pwm_40deg_ft;
+//	}
+//
+//	return pwm;
+//
+//}

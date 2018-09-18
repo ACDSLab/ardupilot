@@ -39,11 +39,13 @@ public:
     float compute_rpm_control(float des_rpm, float curr_rpm);
 
 
-        // pid accessors
+    // pid accessors
 //    AC_PID& get_rate_roll_pid() { return _pid_rate_roll; }
 //    AC_PID& get_rate_pitch_pid() { return _pid_rate_pitch; }
     AC_PID& get_rate_yaw_pid() { return _pid_rate_yaw; }
     AC_PID& get_rpm_pid() {return _pid_rpm; }
+
+    //
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
 
@@ -63,6 +65,14 @@ private:
     // PID controllers
     AC_PID   _pid_rate_yaw; // Parameters for AC_PID class yaw channel
     AC_PID   _pid_rpm;
+
+    // Servo Calibration for 4 flaps and 1 rudder
+    Flap _flap1;
+    Flap _flap2;
+    Flap _flap3;
+    Flap _flap4;
+
+    Rudder _rudder;
 
 
 };
