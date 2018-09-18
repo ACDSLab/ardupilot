@@ -67,10 +67,10 @@ void Copter::ModeCoanda::run()
     /**************************
     * RPM Controller
     ***************************/
-/*     // Get rpm value from RPM pin (the sensor is in AP_RPM)
+    // Get rpm value from RPM pin (the sensor is in AP_RPM)
     float curr_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
-    // Get the pilot input percentage
+/*    // Get the pilot input percentage
     uint8_t throttle_stick_percent = channel_throttle->percent_input();  // This gives us something 0 - 100
     float des_rpm = cemav->get_pilot_des_rpm(throttle_stick_percent);  // Desired RPM
 
@@ -123,6 +123,6 @@ void Copter::ModeCoanda::run()
     * Debug printing
     ***************************/
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
+//    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
 
 }
