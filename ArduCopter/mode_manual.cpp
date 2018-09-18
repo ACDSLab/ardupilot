@@ -45,8 +45,14 @@ void Copter::ModeManual::run()
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
 	
 	
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, channel_yaw->get_radio_in());
+//    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, channel_yaw->get_radio_in());
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+
+
+    // Using the servo cal!
+    float yaw_angle_input =  40*(channel_yaw->norm_input_dz()); // -40 to 40
+    uint16_t yaw_servo_pwm = cemav->rudder_angle_to_pwm(yaw_angle_input);
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, yaw_servo_pwm);
 
     // DEBUG
     float curr_rpm = copter.rpm_sensor.get_rpm(0);

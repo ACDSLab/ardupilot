@@ -45,6 +45,18 @@ public:
     AC_PID& get_rate_yaw_pid() { return _pid_rate_yaw; }
     AC_PID& get_rpm_pid() {return _pid_rpm; }
 
+    // servo cal accessors
+    Flap& get_flap1(){ return _flap1;}
+    Flap& get_flap2(){ return _flap2;}
+    Flap& get_flap3(){ return _flap3;}
+    Flap& get_flap4(){ return _flap4;}
+
+    Rudder& get_rudder(){return _rudder;}
+
+    // Control surface deflection angle to PWM values
+    uint16_t flap_angle_to_pwm(float angle, int flap_number);
+    uint16_t rudder_angle_to_pwm(float angle);
+
     //
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters

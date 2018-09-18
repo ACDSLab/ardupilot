@@ -84,3 +84,94 @@ const AP_Param::GroupInfo Rudder::var_info[] = {
         AP_GROUPEND
 };
 
+uint16_t Flap::flap_angle_to_pwm(float angle) {
+    uint16_t pwm = 0;
+
+
+	if (angle >= 0 && angle < 15) {
+		pwm = _pwm_0deg + (angle/15)*(_pwm_15deg - _pwm_0deg);
+	} else if (angle >= 15 && angle < 30) {
+		pwm = _pwm_15deg + ((angle - 15)/15)*(_pwm_30deg - _pwm_15deg);
+	} else if (angle >= 30 && angle < 45) {
+		pwm = _pwm_30deg + ((angle - 30)/15) * (_pwm_45deg - _pwm_30deg);
+	} else if (angle >= 45 && angle < 60) {
+		pwm = _pwm_45deg + ((angle - 45)/15) * (_pwm_60deg - _pwm_45deg);
+	} else if (angle >= 60 && angle < 75) {
+		pwm = _pwm_60deg + ((angle - 60)/15) * (_pwm_75deg - _pwm_60deg);
+	} else if (angle >= 75 && angle <= 90) {
+		pwm = _pwm_75deg + ((angle - 75)/15) * (_pwm_90deg - _pwm_75deg);
+	} else if (angle < 0) {
+		pwm = _pwm_0deg;
+	} else if (angle > 90) {
+		pwm = _pwm_90deg;
+	}
+
+	return pwm;
+}
+
+uint16_t Rudder::rudder_angle_to_pwm(float angle) {
+    uint16_t pwm = 0;
+
+
+	if (angle >= -40 && angle < -30) {
+		pwm = _pwm_n40deg + ((angle + 40)/10)*(_pwm_n30deg - _pwm_n40deg);
+	} else if (angle >= -30 && angle < -15) {
+		pwm = _pwm_n30deg + ((angle + 30)/15)*(_pwm_n15deg - _pwm_n30deg);
+	} else if (angle >= -15 && angle < 0) {
+		pwm = _pwm_n15deg + ((angle + 15)/15)*(_pwm_0deg - _pwm_n15deg);
+	} else if (angle >= 0 && angle < 15) {
+		pwm = _pwm_0deg + (angle/15)*(_pwm_15deg - _pwm_0deg);
+	} else if (angle >= 15 && angle < 30) {
+		pwm = _pwm_15deg + ((angle - 15)/15)*(_pwm_30deg - _pwm_15deg);
+	} else if (angle >= 30 && angle <= 40) {
+		pwm = _pwm_30deg + ((angle - 30)/10)*(_pwm_40deg - _pwm_30deg);
+	} else if (angle < -40) {
+		pwm = _pwm_n40deg;
+	} else if (angle > 40) {
+		pwm = _pwm_40deg;
+	}
+
+	return pwm;
+}
+
+
+//
+//float CEMAV::fishtail_angle_to_pwm(float angle) {
+//
+//	float pwm = 0;
+//
+//	if (angle == -40) {
+//		pwm = _pwm_n40deg_ft;
+//	} else if (angle == -30) {
+//		pwm = _pwm_n30deg_ft;
+//	} else if (angle == -15) {
+//		pwm = _pwm_n15deg_ft;
+//	} else if (angle == 0) {
+//		pwm = _pwm_0deg_ft;
+//	} else if (angle == 15) {
+//		pwm = _pwm_15deg_ft;
+//	} else if (angle == 30) {
+//		pwm = _pwm_30deg_ft;
+//	} else if (angle == 40) {
+//		pwm = _pwm_40deg_ft;
+//	} else if (angle > -40 && angle < -30) {
+//		pwm = _pwm_n40deg_ft + angle/10*(_pwm_n30deg_ft - _pwm_n40deg_ft);
+//	} else if (angle > -30 && angle < -15) {
+//		pwm = _pwm_n30deg_ft + angle/15*(_pwm_n15deg_ft - _pwm_n30deg_ft);
+//	} else if (angle > -15 && angle < 0) {
+//		pwm = _pwm_n15deg_ft + angle/15*(_pwm_n0deg_ft - _pwm_n15deg_ft);
+//	} else if (angle > 0 && angle < 15) {
+//		pwm = _pwm_0deg_ft + angle/15*(_pwm_15deg_ft - _pwm_0deg_ft);
+//	} else if (angle > 15 && angle < 30) {
+//		pwm = _pwm_15deg_ft + angle/15*(_pwm_30deg_ft - _pwm_15deg_ft);
+//	} else if (angle > 30 && angle < 40) {
+//		pwm = _pwm_30deg_ft + angle/10*(_pwm_40deg_ft - _pwm_30deg_ft);
+//	} else if (angle < -40) {
+//		pwm = _pwm_n40deg_ft;
+//	} else if (angle > 40) {
+//		pwm = _pwm_40deg_ft;
+//	}
+//
+//	return pwm;
+//
+//}

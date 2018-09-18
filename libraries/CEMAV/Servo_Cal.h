@@ -14,6 +14,8 @@
 class Flap {
 public:
     static const struct AP_Param::GroupInfo var_info[];
+    uint16_t flap_angle_to_pwm(float angle);
+
 
 protected:
 
@@ -30,6 +32,7 @@ protected:
 class Rudder {
 public:
     static const struct AP_Param::GroupInfo var_info[];
+    uint16_t rudder_angle_to_pwm(float angle);
 
 protected:
 
