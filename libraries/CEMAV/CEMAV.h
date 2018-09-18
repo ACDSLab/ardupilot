@@ -12,6 +12,7 @@
 #include <AP_AHRS/AP_AHRS_View.h> // Get a view of the ekf
 #include <AC_PID/AC_PID.h>  // Get the PID controller class
 #include <SRV_Channel/SRV_Channel.h> // Set servo angle max
+#include <CEMAV/Servo_Cal.h>
 
 
 #ifndef CEMAV_H_
