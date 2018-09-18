@@ -91,11 +91,14 @@ void Copter::ModeCoanda::run()
     /**************************
     * Roll and Pitch Pass-through
     ***************************/
-	// Add manual "passthrough pwm" flap control
-	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, channel_roll->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, channel_pitch->get_radio_in());
-	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in());
+    // Servo Cal Flaps
+    float roll_flap_input = 90*channel_roll->norm_input_dz();
+    float pitch_flap_input = 90*channel_pitch->norm_input_dz();
+
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(roll_flap_input, 1));
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(pitch_flap_input, 2));
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1*roll_flap_input, 3));
+    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 4));
 
     /**************************
     * Debug printing

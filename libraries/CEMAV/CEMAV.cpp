@@ -215,17 +215,21 @@ float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
 
 uint16_t CEMAV::flap_angle_to_pwm(float angle, int flap_number) {
 
-    uint8_t pwm = 0;
+    uint16_t pwm = 0;
 
 	switch (flap_number) {
         case 1:
             pwm = _flap1.flap_angle_to_pwm(angle);
+            break;
         case 2:
             pwm = _flap2.flap_angle_to_pwm(angle);
+            break;
         case 3:
             pwm = _flap3.flap_angle_to_pwm(angle);
+            break;
         case 4:
             pwm = _flap4.flap_angle_to_pwm(angle);
+            break;
 	}
 	return pwm;
 }
