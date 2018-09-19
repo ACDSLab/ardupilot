@@ -47,19 +47,7 @@ void Copter::ModeCoanda::run()
     // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
     float u_rudder_angle = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) / _yaw_control_scale
 
-    // Convert u_yaw rate to a PWM.
-//    uint16_t yaw_r_min_pwm = SRV_Channels::srv_channel(5)->get_output_min();
-//    uint16_t yaw_r_max_pwm = SRV_Channels::srv_channel(5)->get_output_max();
-//    uint16_t yaw_r_trim_pwm = SRV_Channels::srv_channel(5)->get_trim();
-
-    // Get the rpm fraction then scale it by the pwm range, finally constrain the change in throttle to be between 100
-//    float u_yaw_rate_bounded = -1*constrain_value(u_yaw_rate, (float)-1, (float) 1); // Bound the yaw rate
-
-    // Bounded yaw rate will never result in a negative float being converted to unsigned integer.
-//    uint16_t u_yaw_rate_pwm = u_yaw_rate_bounded* (yaw_r_max_pwm - yaw_r_trim_pwm) + yaw_r_trim_pwm;
-
-    // Set rudder angle pwm
-//    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, u_yaw_rate_pwm);
+    // Set the rudder PWM
 	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 
 
@@ -108,7 +96,7 @@ void Copter::ModeCoanda::run()
     ***************************/
     // Get the pilot input from pitch channel
     float q_stick_norm = channel_pitch->norm_input_dz();  // -1 to 1
-    float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1
+    float p_stick_norm = -1*channel_roll->norm_input_dz();  // -1 to 1 The stick is reversed!
     float des_q = cemav->get_pilot_des_q(q_stick_norm); //
     float des_p = cemav->get_pilot_des_p(p_stick_norm); //
     //
