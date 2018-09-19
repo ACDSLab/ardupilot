@@ -293,8 +293,8 @@ void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]
 
 void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {
     // Compute the error in both pitch and roll
-    float err_pitch = des_pitch - _ahrs.roll * RAD_TO_DEG;
-    float err_roll = des_roll - _ahrs.pitch* RAD_TO_DEG;
+    float err_pitch = des_pitch - _ahrs.pitch * RAD_TO_DEG;
+    float err_roll = des_roll - _ahrs.roll* RAD_TO_DEG;
 
     // Set and then compute the pid terms
     _pid_pitch.set_input_filter_all(err_pitch);
@@ -302,10 +302,6 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
     float u_pitch_rate = _pid_pitch.get_pid();
     float u_roll_rate = _pid_roll.get_pid();
 
-    // Get the current rates
-    float cur_p = _ahrs.get_gyro()[0] * RAD_TO_DEG;
-    float cur_q = _ahrs.get_gyro()[1] * RAD_TO_DEG;
-
-    // The output of PID are desired pitch rate and roll rate, send those to the LQR controller
-    _lqr.compute_control_pq(cur_p, cur_q, u_roll_rate, u_pitch_rate, flap_angles);
+    // Compute controll from the desired rates
+    compute_control_pq(u_pitch_rate, u_roll_rate, flap_angles);
 }
