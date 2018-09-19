@@ -95,8 +95,8 @@ void Copter::ModeCoanda::run()
     * Roll and Pitch LQR
     ***************************/
     // Get the pilot input from pitch channel
-    float q_stick_norm = channel_pitch->norm_input_dz();  // -1 to 1
-    float p_stick_norm = -1*channel_roll->norm_input_dz();  // -1 to 1 The stick is reversed!
+    float q_stick_norm = -1*channel_pitch->norm_input_dz();  // -1 to 1
+    float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1 The stick is reversed!
     float des_q = cemav->get_pilot_des_q(q_stick_norm); //
     float des_p = cemav->get_pilot_des_p(p_stick_norm); //
     //

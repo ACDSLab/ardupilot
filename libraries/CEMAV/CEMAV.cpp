@@ -303,5 +303,5 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
     float u_roll_rate = _pid_roll.get_pid();
 
     // Compute controll from the desired rates
-    compute_control_pq(u_pitch_rate, u_roll_rate, flap_angles);
+    compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
 }
