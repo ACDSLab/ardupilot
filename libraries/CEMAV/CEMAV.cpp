@@ -142,7 +142,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         // @Param: MAX_P_DS
         // @DisplayName: Maximum p angular velocity in deg/s
-        // @Description: Maximum p angular velocity in deg/s. Max stick input commands max yaw rate.
+        // @Description: Maximum p angular velocity in deg/s. Max stick input commands max roll rate.
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
@@ -150,7 +150,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         // @Param: MAX_Q_DS
         // @DisplayName: Maximum q angular velocity in deg/s
-        // @Description: Maximum q angular velocity in deg/s. Max stick input commands max yaw rate.
+        // @Description: Maximum q angular velocity in deg/s. Max stick input commands max pitch rate.
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
@@ -158,7 +158,36 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_SUBGROUPINFO(_lqr, "PQ_", 13, CEMAV, LQR),
 
-		AP_GROUPEND
+        // @Param: MAX_PIT
+        // @DisplayName: Maximum pitch angle in deg
+        // @Description: Maximum q angular velocity in deg/s. Max stick input commands max yaw rate.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("MAX_PIT", 14, CEMAV, _max_pitch_angle, 45.0f),
+
+        // @Param: MAX_ROL
+        // @DisplayName: Maximum roll angle in deg
+        // @Description: Maximum roll angle in deg.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("MAX_ROL", 15, CEMAV, _max_roll_angle, 45.0f),
+
+        // @Param: MAX_D_YAW
+        // @DisplayName: Maximum change in yaw angle in delta deg
+        // @Description: Maximum roll angle in deg.
+        // @Range: 200 720
+        // @Increment 1
+        // @User: Advanced
+        AP_GROUPINFO("MAX_D_YAW", 16, CEMAV, _max_delta_yaw_angle, 720.0f),
+
+        AP_SUBGROUPINFO(_pid_pitch, "PIT_", 17, CEMAV, AC_PID),
+
+        AP_SUBGROUPINFO(_pid_roll, "ROL_", 18, CEMAV, AC_PID),
+
+
+        AP_GROUPEND
 
 };
 
@@ -166,7 +195,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _ahrs(ahrs),
     _pid_rate_yaw(10, 1, 0, 0.5, 5, dt),
-    _pid_rpm(10, 0, 0, 0.5, 5, dt)
+    _pid_rpm(10, 0, 0, 0.5, 5, dt),
+    _pid_pitch(1,1,0,0.5,5,dt),
+    _pid_roll(1,1,0,0.5,5,dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
 
@@ -192,16 +223,16 @@ float CEMAV::get_pilot_des_q(float norm_stick_input) {
 	return norm_stick_input  * _max_q_ds;
 }
 
-//float CEMAV::get_pilot_des_pitch(int16_t norm_stick_input) {
-//
-//	return norm_stick_input  * CEMAV_MAX_PITCH;
-//}
-//
-//float CEMAV::get_pilot_des_roll(int16_t norm_stick_input) {
-//
-//	return norm_stick_input  * CEMAV_MAX_ROLL;
-//}
-//
+float CEMAV::get_pilot_des_pitch(float norm_stick_input) {
+
+	return norm_stick_input  * _max_pitch_angle;
+}
+
+float CEMAV::get_pilot_des_roll(float norm_stick_input) {
+
+	return norm_stick_input  * _max_roll_angle;
+}
+
 float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
 
     return ( (float) throttle_stick_percent/ 100.0) * _max_rpm;
@@ -258,4 +289,23 @@ void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]
   float cur_p = _ahrs.get_gyro()[0] * RAD_TO_DEG;
   float cur_q = _ahrs.get_gyro()[1] * RAD_TO_DEG;
   _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
+}
+
+void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {
+    // Compute the error in both pitch and roll
+    float err_pitch = des_pitch - _ahrs.roll * RAD_TO_DEG;
+    float err_roll = des_roll - _ahrs.pitch* RAD_TO_DEG;
+
+    // Set and then compute the pid terms
+    _pid_pitch.set_input_filter_all(err_pitch);
+    _pid_roll.set_input_filter_all(err_roll);
+    float u_pitch_rate = _pid_pitch.get_pid();
+    float u_roll_rate = _pid_roll.get_pid();
+
+    // Get the current rates
+    float cur_p = _ahrs.get_gyro()[0] * RAD_TO_DEG;
+    float cur_q = _ahrs.get_gyro()[1] * RAD_TO_DEG;
+
+    // The output of PID are desired pitch rate and roll rate, send those to the LQR controller
+    _lqr.compute_control_pq(cur_p, cur_q, u_roll_rate, u_pitch_rate, flap_angles);
 }

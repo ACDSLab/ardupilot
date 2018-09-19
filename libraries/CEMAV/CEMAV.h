@@ -30,19 +30,20 @@ public:
     float get_pilot_des_yaw_rate(float norm_stick_input);// { return stick_input / MAX_YAW_STICK_INPUT * CEMAV_MAX_YAW_RATE; };
 	float get_pilot_des_p(float norm_stick_input);  // X axis body rate desired
 	float get_pilot_des_q(float norm_stick_input);  // Y axis body rate desired
-//	float get_pilot_des_pitch(int16_t norm_stick_input);
-//	float get_pilot_des_roll(int16_t norm_stick_input);
+	float get_pilot_des_pitch(float norm_stick_input);
+	float get_pilot_des_roll(float norm_stick_input);
 	float get_pilot_des_rpm(uint8_t throttle_stick_percent);
 
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
     float compute_rpm_control(float des_rpm, float curr_rpm);
     void compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]);
+    void compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]);
 
 
     // pid accessors
-//    AC_PID& get_rate_roll_pid() { return _pid_rate_roll; }
-//    AC_PID& get_rate_pitch_pid() { return _pid_rate_pitch; }
+    AC_PID& get_roll_pid() { return _pid_roll; }
+    AC_PID& get_pitch_pid() { return _pid_pitch; }
     AC_PID& get_rate_yaw_pid() { return _pid_rate_yaw; }
     AC_PID& get_rpm_pid() {return _pid_rpm; }
 
@@ -67,11 +68,16 @@ private:
     // References to external libraries
     const AP_AHRS_View&  _ahrs;
 
-    // Yaw Rate Parameters
+    // Attitude Rate Parameters
     AP_Float _max_yaw_ds; // Maximum yaw rate in degrees per second
     AP_Float _yaw_rate_control_scale; // Scaling the error before putting it into the PID class
     AP_Float _max_p_ds;
     AP_Float _max_q_ds;
+
+    // Attitude Parameters
+    AP_Float _max_pitch_angle;
+    AP_Float _max_roll_angle;
+    AP_Float _max_delta_yaw_angle;
 
     // RPM Parameters
     AP_Float _max_rpm; // Maximum angular speed of the motor in revolutions per minute
@@ -80,6 +86,8 @@ private:
     // PID controllers
     AC_PID   _pid_rate_yaw; // Parameters for AC_PID class yaw channel
     AC_PID   _pid_rpm;
+    AC_PID   _pid_pitch;
+    AC_PID   _pid_roll;
 
     // Servo Calibration for 4 flaps and 1 rudder
     Flap _flap1;

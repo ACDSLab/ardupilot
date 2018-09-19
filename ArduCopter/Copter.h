@@ -995,6 +995,7 @@ private:
 #endif
     ModeManual mode_manual;
     ModeCoanda mode_coanda;
+    ModeCoandaAtt mode_coanda_attitude;
 
     // mode.cpp
     Mode *mode_from_mode_num(const uint8_t mode);
