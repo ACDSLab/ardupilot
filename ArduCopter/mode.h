@@ -1,4 +1,5 @@
 #pragma once
+
 // this class is #included into the Copter:: namespace
 
 class Mode {
@@ -1303,7 +1304,6 @@ private:
 //    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
 
 };
-
 class ModeCoandaAtt : public Mode {
 public:
     // inherit constructor
@@ -1325,5 +1325,9 @@ protected:
 
 private:
 //    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
+    uint32_t prev_loop_now = AP_HAL::micros();
+    uint32_t curr_loop_now = AP_HAL::micros();
+
+    int counter = 1;
 
 };

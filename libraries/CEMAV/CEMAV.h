@@ -59,6 +59,9 @@ public:
     uint16_t flap_angle_to_pwm(float angle, int flap_number);
     uint16_t rudder_angle_to_pwm(float angle);
 
+    // Accessor for controller count max
+    int get_control_counter() {return _count_max;}
+
     //
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
@@ -98,6 +101,12 @@ private:
     Rudder _rudder;
 
     LQR _lqr;
+
+    // Counter to delay controller calculation
+    AP_Int16 _count_max;
+
+    // Trim Angle for Yaw
+    AP_Float _yaw_trim_angle;
 
 
 };

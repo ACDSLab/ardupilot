@@ -186,6 +186,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_SUBGROUPINFO(_pid_roll, "ROL_", 18, CEMAV, AC_PID),
 
+        AP_GROUPINFO("COUNTER", 19, CEMAV, _count_max, 1),
+        AP_GROUPINFO("YAW_TRIM", 20, CEMAV, _yaw_trim_angle, 0.0f),
+
 
         AP_GROUPEND
 
@@ -250,7 +253,7 @@ float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
     float error = des_yaw_rate - curr_yaw_rate;
     _pid_rate_yaw.set_input_filter_d(error); // Filter the error signal
 
-    return (_pid_rate_yaw.get_pid()); // Compute then scale the output control
+    return (_pid_rate_yaw.get_pid()) - _yaw_trim_angle; // Compute then scale the output control
 }
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
