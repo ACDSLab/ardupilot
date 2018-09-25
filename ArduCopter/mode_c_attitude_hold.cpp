@@ -48,11 +48,10 @@ void Copter::ModeCoandaAtt::run()
         // Get the pilot input from rudder channel: 4
         float yaw_rate_stick_norm = channel_yaw->norm_input_dz();  // -1 to 1
 
-        float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm); // -720 deg per sec to 720
+        float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm); // -2pi rad per sec to 2pi
 
         // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
-        float u_rudder_angle = cemav->compute_yaw_rate_control(
-                des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) - _yaw_trim_angle
+        float u_rudder_angle = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) - _yaw_trim_angle
 
         // Set the rudder PWM
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
@@ -104,8 +103,8 @@ void Copter::ModeCoandaAtt::run()
         // Get the pilot input from pitch channel
         float pitch_stick_norm = channel_pitch->norm_input_dz();  // -1 to 1
         float roll_stick_norm = -1 * channel_roll->norm_input_dz();  // -1 to 1 The stick is reversed!
-        float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); //
-        float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); //
+        float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); // rad
+        float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
 
         // CEMAV method contains both loops, first we compute the desired rates from the angle error and PID, then we send the rate error to LQR
         float flap_angles[4];
@@ -123,13 +122,13 @@ void Copter::ModeCoandaAtt::run()
         auto duration = curr_loop_now - prev_loop_now;
 
         // Send the time to the servo
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, duration);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, duration);
 
         // Call the timer
         prev_loop_now = AP_HAL::micros();
 
 
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) curr_rpm);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
     } else {
         counter += 1;
     }

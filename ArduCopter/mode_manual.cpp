@@ -35,34 +35,35 @@ void Copter::ModeManual::run()
     // clear landing flag
     set_land_complete(false);
 
-
-    // From a function called void Plane::set_servos_manual_passthrough(void) in servos.cpp in ArduPlane
-    // channel_roll to channel_throttle are channels on the radio. We get the controls from rc_in, and then
-    // pass them to the respect servo channels k_rcin1 - 4
+    if (counter == cemav->get_control_counter()) {
+        counter = 1;
+        // From a function called void Plane::set_servos_manual_passthrough(void) in servos.cpp in ArduPlane
+        // channel_roll to channel_throttle are channels on the radio. We get the controls from rc_in, and then
+        // pass them to the respect servo channels k_rcin1 - 4
 //    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, channel_roll->get_radio_in()); // roll +
 //    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, channel_pitch->get_radio_in()); // pitch +
 //	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, channel_roll->get_radio_in());  // roll -
 //    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, channel_pitch->get_radio_in()); // pitch -
-	
-	
+
+
 //    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, channel_yaw->get_radio_in());
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
 
 
-    // Servo Cal Rudder!
+        // Servo Cal Rudder!
 //    float yaw_angle_input =  40*(channel_yaw->norm_input_dz()); // -40 to 40
 //    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(yaw_angle_input));
-	
-	/**************************
-    * Yaw Rate Controller
-    ***************************/
-	// Get the pilot input from rudder channel: 4
-	float yaw_rate_stick_norm = channel_yaw->norm_input_dz();  // -1 to 1
 
-	float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm); // -720 deg per sec to 720
+        /**************************
+        * Yaw Rate Controller
+        ***************************/
+        // Get the pilot input from rudder channel: 4
+        float yaw_rate_stick_norm = channel_yaw->norm_input_dz();  // -1 to 1
 
-    // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
-    float u_rudder_angle = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) / _yaw_control_scale
+        float des_yaw = cemav->get_pilot_des_yaw_rate(yaw_rate_stick_norm); // -2pi rad per sec to 2pi
+
+        // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
+        float u_rudder_angle = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) - _yaw_trim_angle
 
 /*     // Convert u_yaw rate to a PWM.
 //    uint16_t yaw_r_min_pwm = SRV_Channels::srv_channel(5)->get_output_min();
@@ -77,26 +78,29 @@ void Copter::ModeManual::run()
 
     // Set rudder angle pwm
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, u_yaw_rate_pwm); */
-	
-	SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 
-    // Servo Cal Flaps
-    float roll_flap_input = 90*channel_roll->norm_input_dz();
-    float pitch_flap_input = 90*channel_pitch->norm_input_dz();
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(roll_flap_input, 1));
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 2));
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1*roll_flap_input, 3));
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(pitch_flap_input, 4));
+        // Servo Cal Flaps
+        float roll_flap_input = 90 * channel_roll->norm_input_dz();
+        float pitch_flap_input = 90 * channel_pitch->norm_input_dz();
 
-
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(roll_flap_input, 1));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(-1 * pitch_flap_input, 2));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1 * roll_flap_input, 3));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(pitch_flap_input, 4));
 
 
-    // DEBUG
-    float curr_rpm = copter.rpm_sensor.get_rpm(0);
-    uint8_t throttle_stick_percent = channel_throttle->percent_input();
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
-    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) throttle_stick_percent);
+
+
+        // DEBUG
+        float curr_rpm = copter.rpm_sensor.get_rpm(0);
+        uint8_t throttle_stick_percent = channel_throttle->percent_input();
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
+//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) throttle_stick_percent);
+    } else {
+        counter += 1;
+    }
 
 
 

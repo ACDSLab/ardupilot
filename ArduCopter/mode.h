@@ -1278,6 +1278,8 @@ protected:
     const char *name4() const override { return "MANU"; }
 
 private:
+    int counter = 1;
+
 
 };
 
@@ -1302,6 +1304,8 @@ protected:
 
 private:
 //    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
+    int counter = 1;
+
 
 };
 class ModeCoandaAtt : public Mode {

@@ -213,27 +213,27 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
 
 float CEMAV::get_pilot_des_yaw_rate(float norm_stick_input) {
 
-	return norm_stick_input * _max_yaw_ds;
+	return norm_stick_input * _max_yaw_ds * DEG_TO_RAD;
 }
 
 float CEMAV::get_pilot_des_p(float norm_stick_input) {
 
-	return norm_stick_input  * _max_p_ds;
+	return norm_stick_input  * _max_p_ds * DEG_TO_RAD;
 }
 
 float CEMAV::get_pilot_des_q(float norm_stick_input) {
 
-	return norm_stick_input  * _max_q_ds;
+	return norm_stick_input  * _max_q_ds * DEG_TO_RAD;
 }
 
 float CEMAV::get_pilot_des_pitch(float norm_stick_input) {
 
-	return norm_stick_input  * _max_pitch_angle;
+	return norm_stick_input  * _max_pitch_angle * DEG_TO_RAD;
 }
 
 float CEMAV::get_pilot_des_roll(float norm_stick_input) {
 
-	return norm_stick_input  * _max_roll_angle;
+	return norm_stick_input  * _max_roll_angle * DEG_TO_RAD;
 }
 
 float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
@@ -247,10 +247,10 @@ float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
  */
 float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
     // Get the current yaw rate
-    float curr_yaw_rate = _ahrs.get_gyro()[2] * RAD_TO_DEG;
+    float curr_yaw_rate = _ahrs.get_gyro()[2];
 
     // Get the desired yaw rate
-    float error = des_yaw_rate - curr_yaw_rate;
+    float error = des_yaw_rate - curr_yaw_rate; // diff in rad/sec
     _pid_rate_yaw.set_input_filter_d(error); // Filter the error signal
 
     return (_pid_rate_yaw.get_pid()) - _yaw_trim_angle; // Compute then scale the output control
@@ -289,21 +289,21 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
 }
 
 void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]) {
-  float cur_p = _ahrs.get_gyro()[0] * RAD_TO_DEG;
-  float cur_q = _ahrs.get_gyro()[1] * RAD_TO_DEG;
+  float cur_p = _ahrs.get_gyro()[0];
+  float cur_q = _ahrs.get_gyro()[1];
   _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
 }
 
 void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {
     // Compute the error in both pitch and roll
-    float err_pitch = des_pitch - _ahrs.pitch * RAD_TO_DEG;
-    float err_roll = des_roll - _ahrs.roll* RAD_TO_DEG;
+    float err_pitch = des_pitch - _ahrs.pitch;
+    float err_roll = des_roll - _ahrs.roll;
 
     // Set and then compute the pid terms
     _pid_pitch.set_input_filter_all(err_pitch);
     _pid_roll.set_input_filter_all(err_roll);
-    float u_pitch_rate = _pid_pitch.get_pid();
-    float u_roll_rate = _pid_roll.get_pid();
+    float u_pitch_rate = _pid_pitch.get_pid(); // rad/sec
+    float u_roll_rate = _pid_roll.get_pid();  // rad/sec
 
     // Compute controll from the desired rates
     compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
