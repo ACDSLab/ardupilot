@@ -156,7 +156,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Advanced
         AP_GROUPINFO("MAX_Q_DS", 12, CEMAV, _max_q_ds, 720.0f),
 
-        AP_SUBGROUPINFO(_lqr, "PQ_", 13, CEMAV, LQR),
+        AP_SUBGROUPINFO(_dynamic_inv, "DI_", 13, CEMAV, DI),
 
         // @Param: MAX_PIT
         // @DisplayName: Maximum pitch angle in deg
@@ -207,7 +207,7 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
 }
 
 
-/* Define functions to parse stick inputs (PWM). Functions are seperate in case
+/* Define functions to parse stick inputs (PWM). Functions are separate in case
  * we want separate logic for each pilot input
  */
 
@@ -289,9 +289,9 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
 }
 
 void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]) {
-  float cur_p = _ahrs.get_gyro()[0];
-  float cur_q = _ahrs.get_gyro()[1];
-  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
+//  float cur_p = _ahrs.get_gyro()[0];
+//  float cur_q = _ahrs.get_gyro()[1];
+//  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
 }
 
 void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {

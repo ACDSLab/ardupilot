@@ -14,6 +14,7 @@
 #include <SRV_Channel/SRV_Channel.h> // Set servo angle max
 #include <CEMAV/Servo_Cal.h>
 #include <CEMAV/LQR.h>
+#include <CEMAV/Dynamic_Inversion.h>
 
 #ifndef CEMAV_H_
 #define CEMAV_H_
@@ -100,7 +101,8 @@ private:
 
     Rudder _rudder;
 
-    LQR _lqr;
+//    LQR _lqr;
+    DI  _dynamic_inv;
 
     // Counter to delay controller calculation
     AP_Int16 _count_max;
