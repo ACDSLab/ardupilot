@@ -103,9 +103,10 @@ void Copter::ModeCoanda::run()
         float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
         //
         float flap_angles[4];
-        // Compute the control on the rates
-        cemav->compute_control_pq(des_p, des_q, flap_angles);
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(flap_angles[0], 1));
+        // Compute the control on the rates, TODO get the curr_rud_angle_rad
+        cemav->compute_control_pq(des_p, des_q, curr_rpm, curr_rud_angle_rad, flap_angles);
+
+            SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(flap_angles[0], 1));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(flap_angles[1], 2));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(flap_angles[2], 3));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(flap_angles[3], 4));
