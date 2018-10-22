@@ -289,10 +289,15 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
 }
 
 void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]) {
-//  float cur_p = _ahrs.get_gyro()[0];
-//  float cur_q = _ahrs.get_gyro()[1];
+  float cur_p = _ahrs.get_gyro()[0];
+  float cur_q = _ahrs.get_gyro()[1];
+  float cur_r = _ahrs.get_gyro()[2];
+  
 //  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
+    _dynamic_inv.compute_control_pq();
 }
+
+float CEMAV::
 
 void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {
     // Compute the error in both pitch and roll

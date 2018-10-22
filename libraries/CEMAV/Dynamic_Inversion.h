@@ -18,10 +18,29 @@ class DI {
 public:
     static const struct AP_Param::GroupInfo var_info[];
 
+    // Compute the control for roll and pitch rate
+    void compute_control_pq(float curr_p, float des_p,
+                            float curr_q, float des_q,
+                            float curr_r, float curr_omega,
+                            float curr_rud_angle_rad, float (&angles)[4]);
+private:
+    // Compute the nonlinearity
     void compute_g_x(float curr_p, float curr_q, float curr_r, float curr_omega, float (&g)[2]);
-    double compute_c2(float curr_omega, float curr_rudd_angle_deg);
+
+    // Compute a constant based on saturated rudder angle
+    float compute_c2(float curr_omega, float curr_rudd_angle_deg);
+
+    // Get desired moments from current and desired rates
+    void compute_des_moments(float curr_p, float des_p,
+                             float curr_q, float des_q,
+                             float curr_r, float curr_omega,
+                             float (&moments)[2]);
+
+    // Convert desired moments to flap angles
+    void moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4]);
 
 protected:
+    // Parameters for the system
     AP_Float _I_Bx;
     AP_Float _I_By;
     AP_Float _I_Bz;
@@ -35,8 +54,12 @@ protected:
     AP_Float _R;
     AP_Float _rz;
 
-    double C_1 = sqrtf(_R/8*_R/8 + (2 - sqrtf(2.0)) * _rz * _rz/ (M_2PI*M_2PI));
-    double theta = atan2f(-1*sqrtf((2 - sqrtf(2.0))) * _rz / M_2PI, _R / 8 );
-    double C_2;
+    // Constants used in the dynamic inversion
+    float C_1 = sqrtf(_R/8*_R/8 + (2 - sqrtf(2.0)) * _rz * _rz/ (M_2PI*M_2PI));
+    float theta = atan2f(-1*sqrtf((2 - sqrtf(2.0))) * _rz / M_2PI, _R / 8 ); // radians
+
+    // PID Compensator on Rate that outputs pseudocontrol v
+    AC_PID _pid_v_pitch;
+    AC_PID _pid_v_roll;
 };
 #endif //ARDUPILOT_DYNAMIC_INVERSION_H
