@@ -58,8 +58,12 @@ protected:
     AP_Float _rz;
 
     // Constants used in the dynamic inversion
-    float C_1 = sqrtf(_R/8*_R/8 + (2 - sqrtf(2.0)) * _rz * _rz/ (M_2PI*M_2PI));
-    float theta = atan2f(-1*sqrtf((2 - sqrtf(2.0))) * _rz / M_2PI, _R / 8 ); // radians
+	float a = R / 8;
+	float b = -1 * sqrtf(2 - sqrtf(2.0)) * _rz / M_2PI;
+    // float C_1 = sqrtf(_R/8*_R/8 + (2 - sqrtf(2.0)) * _rz * _rz/ (M_2PI*M_2PI));
+	float C_1 = sqrtf(a*a + b*b);
+	float theta = atan2f(b, a);
+    // float theta = atan2f(-1*sqrtf((2 - sqrtf(2.0))) * _rz / M_2PI, _R / 8 ); // radians
 
     // PID Compensator on Rate that outputs pseudocontrol v
     AC_PID _pid_v_pitch;
