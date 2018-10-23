@@ -74,8 +74,9 @@ DI::DI(float dt) :
 
 // Compute the nonlinear cross term and the gyroscopic term that we want to eliminate
 void DI::compute_g_x(float curr_p, float curr_q, float curr_r, float curr_omega, float (&g)[2]) {
-    g[0] = (_I_Bz - _I_By)*curr_q*curr_r + _I_Rz*curr_omega*curr_q;
-    g[1] = (_I_Bx - _I_Bz)*curr_p*curr_r - _I_Rz*curr_omega*curr_p;
+	float curr_omega_rads = curr_omega * M_2PI / 60;
+    g[0] = (_I_Bz - _I_By)*curr_q*curr_r + _I_Rz*curr_omega_rads*curr_q;
+    g[1] = (_I_Bx - _I_Bz)*curr_p*curr_r - _I_Rz*curr_omega_rads*curr_p;
 }
 
 void DI::compute_des_moments(float curr_p, float des_p,
