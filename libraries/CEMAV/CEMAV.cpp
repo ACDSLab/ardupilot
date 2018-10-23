@@ -200,7 +200,8 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rate_yaw(10, 1, 0, 0.5, 5, dt),
     _pid_rpm(10, 0, 0, 0.5, 5, dt),
     _pid_pitch(1,1,0,0.5,5,dt),
-    _pid_roll(1,1,0,0.5,5,dt)
+    _pid_roll(1,1,0,0.5,5,dt),
+    _dynamic_inv(dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
 
@@ -297,9 +298,7 @@ void CEMAV::compute_control_pq(float des_p, float des_q, float curr_omega, float
                                     curr_rud_angle_rad, flap_angles);
 }
 
-float CEMAV::
-
-void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {
+void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float curr_omega, float curr_rud_angle_rad, float (&flap_angles)[4]) {
     // Compute the error in both pitch and roll
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
@@ -310,6 +309,8 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
     float u_pitch_rate = _pid_pitch.get_pid(); // rad/sec
     float u_roll_rate = _pid_roll.get_pid();  // rad/sec
 
-    // Compute controll from the desired rates
-    compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
+    // Compute control from the desired rates
+//    compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
+    compute_control_pq(u_roll_rate, u_pitch_rate, curr_omega, curr_rud_angle_rad, flap_angles);
+
 }

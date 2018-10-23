@@ -55,13 +55,22 @@ const AP_Param::GroupInfo DI::var_info[] = {
         // @Description:
         AP_GROUPINFO("rz", 9, DI, _rz, 0),
 
-        AP_SUBGROUPINFO(_pid_v_pitch, "V_PIT_", 10, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_v_pitch, "V_PIT_", 10, DI, AC_PID),
 
-        AP_SUBGROUPINFO(_pid_v_roll, "V_ROL_", 11, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_v_roll, "V_ROL_", 11, DI, AC_PID),
 
 
         AP_GROUPEND
 };
+
+// Constructor for DI because it has pid's inside it
+DI::DI(float dt) :
+        _pid_v_pitch(1,1,0,0.5,5,dt),
+        _pid_v_roll(1,1,0,0.5,5,dt)
+{
+    AP_Param::setup_object_defaults(this, var_info);
+
+}
 
 // Compute the nonlinear cross term and the gyroscopic term that we want to eliminate
 void DI::compute_g_x(float curr_p, float curr_q, float curr_r, float curr_omega, float (&g)[2]) {
@@ -91,6 +100,7 @@ void DI::compute_des_moments(float curr_p, float des_p,
 void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4]) {
     // Compute C_2 based on current rudder_angle
     float C_2 = compute_c2(curr_omega, curr_rud_angle_rad);
+    C_2 = constrain_value(C_2, (float)0.001, (float)1000);
 
     // The flaps are paired together, each flap corresponds to a roll or pitch moment, positive or negative
     if (moments[0]  > 0) { // Check roll and change flaps 2 and 4
@@ -102,7 +112,7 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
     } else {
         // Negative roll moment Flap 4 comes out and Flap 2 is all the way in
         float u2 = cosf(0 - theta);
-        float u4 = -1*(moments[1] / C_1 / C_2 - u4);
+        float u4 = -1*(moments[1] / C_1 / C_2 - u2);
         angles[1] = 0;
         angles[2] = (acosf(u4 + theta)) * RAD_TO_DEG;
     }
@@ -116,7 +126,7 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
     } else {
         // Negative pitch moment Flap 1 comes out and Flap 3 is all the way in
         float u3 = cosf(0 - theta);
-        float u1 = (moments[1] / C_1 / C_2 + u1);
+        float u1 = (moments[1] / C_1 / C_2 + u3);
         angles[2] = 0;
         angles[0] = (acosf(u1 + theta)) * RAD_TO_DEG;
 
@@ -132,7 +142,7 @@ void DI::compute_control_pq(float curr_p, float des_p,
     compute_des_moments(curr_p, des_p, curr_q, des_q, curr_r, curr_omega, moments);
 
     // Compute the desired flap angles
-    moments_to_flapangles(curr_rud_angle_rad, curr_omega, moments, angles)
+    moments_to_flapangles(curr_rud_angle_rad, curr_omega, moments, angles);
 }
 
 float DI::compute_c2(float curr_omega, float curr_rud_angle_rad) {

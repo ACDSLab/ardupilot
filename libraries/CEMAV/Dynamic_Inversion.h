@@ -18,6 +18,9 @@ class DI {
 public:
     static const struct AP_Param::GroupInfo var_info[];
 
+    // Constructor
+    DI(float dt);
+
     // Compute the control for roll and pitch rate
     void compute_control_pq(float curr_p, float des_p,
                             float curr_q, float des_q,

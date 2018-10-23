@@ -53,6 +53,10 @@ void Copter::ModeCoandaAtt::run()
         // Use the PID controller in CEMAV.cpp to compute the output for the yaw rate controller
         float u_rudder_angle = cemav->compute_yaw_rate_control(des_yaw); // (Kp * (yaw_rate_error) + Ki * int(yaw_rate_error)) - _yaw_trim_angle
 
+        // Constrain the rudder angle
+        float u_rud_constrained = constrain_value(u_rudder_angle, (float)-40, (float)40);
+
+
         // Set the rudder PWM
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 
@@ -98,7 +102,7 @@ void Copter::ModeCoandaAtt::run()
         // SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 4));
 
         /**************************
-        * Roll and Pitch LQR
+        * Roll and Pitch DI
         ***************************/
         // Get the pilot input from pitch channel
         float pitch_stick_norm = channel_pitch->norm_input_dz();  // -1 to 1
@@ -108,7 +112,11 @@ void Copter::ModeCoandaAtt::run()
 
         // CEMAV method contains both loops, first we compute the desired rates from the angle error and PID, then we send the rate error to LQR
         float flap_angles[4];
-        cemav->compute_control_pitch_roll(des_pitch, des_roll, flap_angles);
+
+        // Compute the flap angles
+//        cemav->compute_control_pitch_roll(des_pitch, des_roll, flap_angles);
+        cemav->compute_control_pitch_roll(des_pitch, des_roll, curr_rpm, u_rud_constrained, flap_angles);
+
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(flap_angles[0], 1));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(flap_angles[1], 2));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(flap_angles[2], 3));
