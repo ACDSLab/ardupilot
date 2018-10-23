@@ -58,7 +58,7 @@ protected:
     AP_Float _rz;
 
     // Constants used in the dynamic inversion
-	float a = R / 8;
+	float a = _R / 8;
 	float b = -1 * sqrtf(2 - sqrtf(2.0)) * _rz / M_2PI;
     // float C_1 = sqrtf(_R/8*_R/8 + (2 - sqrtf(2.0)) * _rz * _rz/ (M_2PI*M_2PI));
 	float C_1 = sqrtf(a*a + b*b);
