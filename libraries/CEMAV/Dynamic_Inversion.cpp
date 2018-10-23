@@ -110,15 +110,15 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
     if (moments[0]  > 0) { // Check roll and change flaps 2 and 4
         // Positive roll moment Flap 2 comes out and Flap 4 is all the way in
         float u4 = cosf(0 - theta);
-        float u2 = -1*(moments[1] / C_1 / C_2 - u4);
+        float u2 = -1*(moments[0] / C_1 / C_2 - u4);
         angles[3] = 0;
         angles[1] = (acosf(u2) + theta) * RAD_TO_DEG;
     } else {
         // Negative roll moment Flap 4 comes out and Flap 2 is all the way in
         float u2 = cosf(0 - theta);
-        float u4 = -1*(moments[1] / C_1 / C_2 - u2);
+        float u4 = (moments[0] / C_1 / C_2 + u2);
         angles[1] = 0;
-        angles[2] = (acosf(u4) + theta) * RAD_TO_DEG;
+        angles[3] = (acosf(u4) + theta) * RAD_TO_DEG;
     }
 
     if (moments[1]  > 0) { // Check pitch and change flaps 1 and 3
@@ -133,7 +133,6 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
         float u1 = (moments[1] / C_1 / C_2 + u3);
         angles[2] = 0;
         angles[0] = (acosf(u1) + theta) * RAD_TO_DEG;
-
     }
 }
 
