@@ -65,7 +65,8 @@ public:
     // Accessor for controller count max
     int get_control_counter() {return _count_max;}
 
-    //
+    // Dynamic Inversion Accessor
+    DI& get_DI() {return _dynamic_inv;}
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
 

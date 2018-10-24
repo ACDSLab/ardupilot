@@ -55,6 +55,12 @@ float safe_asin(const T v)
     return asinf(f);
 }
 
+template float safe_asin<int>(const int v);
+template float safe_asin<short>(const short v);
+template float safe_asin<float>(const float v);
+template float safe_asin<double>(const double v);
+
+
 template <typename T>
 float safe_acos(const T v)
 {
@@ -68,12 +74,15 @@ float safe_acos(const T v)
 	if (f <= -1.0f) {
 		return static_cast<float>(M_PI);
 	}
+    return acosf(f);
 }
 
-template float safe_asin<int>(const int v);
-template float safe_asin<short>(const short v);
-template float safe_asin<float>(const float v);
-template float safe_asin<double>(const double v);
+template float safe_acos<int>(const int v);
+template float safe_acos<short>(const short v);
+template float safe_acos<float>(const float v);
+template float safe_acos<double>(const double v);
+
+
 
 template <typename T>
 float safe_sqrt(const T v)

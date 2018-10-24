@@ -27,6 +27,11 @@ public:
                             float curr_r, float curr_omega,
                             float curr_rud_angle_rad, float (&angles)[4],
 							float (&u_array)[4]);
+
+    // Compute the constants required for dynamic inversion from parameters
+    void compute_constants();
+
+
 private:
     // Compute the nonlinearity
     void compute_g_x(float curr_p, float curr_q, float curr_r, float curr_omega, float (&g)[2]);
@@ -45,6 +50,12 @@ private:
 							   float (&moments)[2], float (&angles)[4],
 							   float (&u_array)[4]);
 
+    float get_a() {return -1 * sqrtf(2 - sqrtf(2.0)) * _rz / M_2PI;};
+    float get_b() {return _R / 8;};
+    float get_c1() { return sqrtf(a*a + b*b);};
+    float get_theta() { return atan2f(a, b);};
+
+
 protected:
     // Parameters for the system
     AP_Float _I_Bx;
@@ -61,12 +72,13 @@ protected:
     AP_Float _rz;
 
     // Constants used in the dynamic inversion
-	float a = _R / 8;
-	float b = -1 * sqrtf(2 - sqrtf(2.0)) * _rz / M_2PI;
+//	float a = _R / 8;
+//	float b = -1 * sqrtf(2 - sqrtf(2.0)) * _rz / M_2PI;
     // float C_1 = sqrtf(_R/8*_R/8 + (2 - sqrtf(2.0)) * _rz * _rz/ (M_2PI*M_2PI));
-	float C_1 = sqrtf(a*a + b*b);
-	float theta = atan2f(b, a);
+//	float C_1 = sqrtf(a*a + b*b);
+//	float theta = atan2f(b, a);
     // float theta = atan2f(-1*sqrtf((2 - sqrtf(2.0))) * _rz / M_2PI, _R / 8 ); // radians
+    float a, b, C_1, theta;
 
     // PID Compensator on Rate that outputs pseudocontrol v
     AC_PID _pid_v_pitch;

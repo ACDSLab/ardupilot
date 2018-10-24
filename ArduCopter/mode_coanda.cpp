@@ -15,6 +15,7 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
     //}
     // set target altitude to zero for reporting
     pos_control->set_alt_target(0);
+    cemav->get_DI().compute_constants();
 
 
     return true;
@@ -120,10 +121,10 @@ void Copter::ModeCoanda::run()
         /**************************
         * Debug printing
         ***************************/
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) (u_array[0]) + 1000);
-		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) (u_array[1]) + 1000);
-		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, (int) (u_array[2]) + 1000);
-		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, (int) (u_array[3]) + 1000);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) (u_array[0]*10 + 1000));
+		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) (u_array[1]*10 + 1000));
+		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, (int) (u_array[2]*10 + 1000));
+		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, (int) (u_array[3]*10 + 1000));
 //        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
     } else {
         counter += 1;

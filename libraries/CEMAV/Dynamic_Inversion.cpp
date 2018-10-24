@@ -92,7 +92,11 @@ void DI::compute_des_moments(float curr_p, float des_p,
 
     // Compute g(x)
     float g[2];
-    compute_g_x(curr_p, curr_q, curr_r, curr_omega, g);
+    float constrained_omega=1;
+    if (curr_omega < float(100)) {
+        float constrained_omega = 100;
+    }
+    compute_g_x(curr_p, curr_q, curr_r, constrained_omega, g);
 
     moments[0] = _pid_v_roll.get_pid() + g[0];
     moments[1] = _pid_v_pitch.get_pid() + g[1];
@@ -101,7 +105,8 @@ void DI::compute_des_moments(float curr_p, float des_p,
 void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4],
 							   float (&u_array)[4]) {
     // Compute C_2 based on current rudder_angle
-	float constrained_omega, u1, u2, u3, u4;
+	float constrained_omega=1;
+	float u1, u2, u3, u4;
 	if (curr_omega < float(100)) {
 		constrained_omega = 100;
 	}
@@ -114,13 +119,13 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
         u4 = cosf(0 - theta);
         u2 = -1*(moments[0] / C_1 / C_2 - u4);
         angles[3] = 0;
-        angles[1] = (acosf(u2) + theta) * RAD_TO_DEG;
+        angles[1] = (safe_acos(u2) + theta) * RAD_TO_DEG;
     } else {
         // Negative roll moment Flap 4 comes out and Flap 2 is all the way in
         u2 = cosf(0 - theta);
         u4 = (moments[0] / C_1 / C_2 + u2);
         angles[1] = 0;
-        angles[3] = (acosf(u4) + theta) * RAD_TO_DEG;
+        angles[3] = (safe_acos(u4) + theta) * RAD_TO_DEG;
     }
 
     if (moments[1]  > 0) { // Check pitch and change flaps 1 and 3
@@ -128,21 +133,19 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
         u1 = cosf(0 - theta);
         u3 = -1*(moments[1] / C_1 / C_2 - u1);
         angles[0] = 0;
-        angles[2] = (acosf(u3) + theta) * RAD_TO_DEG;
+        angles[2] = (safe_acos(u3) + theta) * RAD_TO_DEG;
     } else {
         // Negative pitch moment Flap 1 comes out and Flap 3 is all the way in
         u3 = cosf(0 - theta);
         u1 = (moments[1] / C_1 / C_2 + u3);
         angles[2] = 0;
-        angles[0] = (acosf(u1) + theta) * RAD_TO_DEG;
-		
-		// Save the u values to print out on servo channels
-		u_array[0] = u1;
-		u_array[1] = u2;
-		u_array[2] = u3;
-		u_array[3] = u4;
-		
+        angles[0] = (safe_acos(u1) + theta) * RAD_TO_DEG;
     }
+    // Save the u values to print out on servo channels
+    u_array[0] = u1;
+    u_array[1] = u2;
+    u_array[2] = u3;
+    u_array[3] = u4;
 }
 
 void DI::compute_control_pq(float curr_p, float des_p,
@@ -158,6 +161,15 @@ void DI::compute_control_pq(float curr_p, float des_p,
     moments_to_flapangles(curr_rud_angle_rad, curr_omega, moments, angles, u_array);
 }
 
+
 float DI::compute_c2(float curr_omega, float curr_rud_angle_rad) {
     return _K_z * curr_omega * curr_omega * cosf(curr_rud_angle_rad + _S_z); // cosine in radians
+}
+
+
+void DI::compute_constants() {
+    a = get_a();
+    b = get_b();
+    C_1 = get_c1();
+    theta = get_theta();
 }
