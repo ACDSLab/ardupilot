@@ -55,6 +55,21 @@ float safe_asin(const T v)
     return asinf(f);
 }
 
+template <typename T>
+float safe_acos(const T v)
+{
+	const float f = static_cast<const float>(v);
+	if (isnan(f)) {
+		return 0.0f;
+	}
+	if (f >= 1.0f) {
+		return 0.0f;
+	}
+	if (f <= -1.0f) {
+		return static_cast<float>(M_PI);
+	}
+}
+
 template float safe_asin<int>(const int v);
 template float safe_asin<short>(const short v);
 template float safe_asin<float>(const float v);

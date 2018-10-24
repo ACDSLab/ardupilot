@@ -73,6 +73,13 @@ template <typename T>
 float safe_asin(const T v);
 
 /*
+* A variant of acos() that checks the input ranges and ensures a valid angle
+* as output. If nan is given as input then zero is returned.
+*/
+template <typename T>
+float safe_acos(const T v);
+
+/*
  * A variant of sqrt() that checks the input ranges and ensures a valid value
  * as output. If a negative number is given then 0 is returned.  The reasoning
  * is that a negative number for sqrt() in our code is usually caused by small
