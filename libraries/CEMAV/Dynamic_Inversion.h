@@ -43,7 +43,7 @@ private:
     // Convert desired moments to flap angles
     void moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, 
 							   float (&moments)[2], float (&angles)[4],
-							   float (&u_array)[4]));
+							   float (&u_array)[4]);
 
 protected:
     // Parameters for the system
