@@ -101,7 +101,7 @@ void DI::compute_des_moments(float curr_p, float des_p,
 void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4],
 							   float (&u_array)[4]) {
     // Compute C_2 based on current rudder_angle
-	float constrained_omega;
+	float constrained_omega, u1, u2, u3, u4;
 	if (curr_omega < float(100)) {
 		constrained_omega = 100;
 	}
@@ -111,28 +111,28 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
     // The flaps are paired together, each flap corresponds to a roll or pitch moment, positive or negative
     if (moments[0]  > 0) { // Check roll and change flaps 2 and 4
         // Positive roll moment Flap 2 comes out and Flap 4 is all the way in
-        float u4 = cosf(0 - theta);
-        float u2 = -1*(moments[0] / C_1 / C_2 - u4);
+        u4 = cosf(0 - theta);
+        u2 = -1*(moments[0] / C_1 / C_2 - u4);
         angles[3] = 0;
         angles[1] = (acosf(u2) + theta) * RAD_TO_DEG;
     } else {
         // Negative roll moment Flap 4 comes out and Flap 2 is all the way in
-        float u2 = cosf(0 - theta);
-        float u4 = (moments[0] / C_1 / C_2 + u2);
+        u2 = cosf(0 - theta);
+        u4 = (moments[0] / C_1 / C_2 + u2);
         angles[1] = 0;
         angles[3] = (acosf(u4) + theta) * RAD_TO_DEG;
     }
 
     if (moments[1]  > 0) { // Check pitch and change flaps 1 and 3
         // Positive pitch moment Flap 3 comes out and Flap 1 is all the way in
-        float u1 = cosf(0 - theta);
-        float u3 = -1*(moments[1] / C_1 / C_2 - u1);
+        u1 = cosf(0 - theta);
+        u3 = -1*(moments[1] / C_1 / C_2 - u1);
         angles[0] = 0;
         angles[2] = (acosf(u3) + theta) * RAD_TO_DEG;
     } else {
         // Negative pitch moment Flap 1 comes out and Flap 3 is all the way in
-        float u3 = cosf(0 - theta);
-        float u1 = (moments[1] / C_1 / C_2 + u3);
+        u3 = cosf(0 - theta);
+        u1 = (moments[1] / C_1 / C_2 + u3);
         angles[2] = 0;
         angles[0] = (acosf(u1) + theta) * RAD_TO_DEG;
 		
