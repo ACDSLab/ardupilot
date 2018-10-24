@@ -92,10 +92,10 @@ void DI::compute_des_moments(float curr_p, float des_p,
 
     // Compute g(x)
     float g[2];
-    float constrained_omega=1;
+    /*float constrained_omega=1;
     if (curr_omega < float(100)) {
         constrained_omega = 100;
-    }
+    }*/
     compute_g_x(curr_p, curr_q, curr_r, constrained_omega, g);
 
     moments[0] = _pid_v_roll.get_pid() + g[0];
