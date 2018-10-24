@@ -96,8 +96,9 @@ void Copter::ModeCoanda::run()
 	float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
 	//
 	float flap_angles[4];
+	float u_array[4];
 	// Compute the control on the rates, TODO get the curr_rud_angle_rad
-	cemav->compute_control_pq(des_p, des_q, curr_rpm, u_rud_constrained, flap_angles);
+	cemav->compute_control_pq(des_p, des_q, curr_rpm, u_rud_constrained, flap_angles, u_array);
 		
     if (counter == cemav->get_control_counter()) {
         counter = 1;
@@ -119,7 +120,10 @@ void Copter::ModeCoanda::run()
         /**************************
         * Debug printing
         ***************************/
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) (u_array[0]) + 1000);
+		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) (u_array[1]) + 1000);
+		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, (int) (u_array[2]) + 1000);
+		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, (int) (u_array[3]) + 1000);
 //        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
     } else {
         counter += 1;

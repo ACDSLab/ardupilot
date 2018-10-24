@@ -25,7 +25,8 @@ public:
     void compute_control_pq(float curr_p, float des_p,
                             float curr_q, float des_q,
                             float curr_r, float curr_omega,
-                            float curr_rud_angle_rad, float (&angles)[4]);
+                            float curr_rud_angle_rad, float (&angles)[4],
+							float (&u_array)[4]);
 private:
     // Compute the nonlinearity
     void compute_g_x(float curr_p, float curr_q, float curr_r, float curr_omega, float (&g)[2]);
@@ -40,7 +41,9 @@ private:
                              float (&moments)[2]);
 
     // Convert desired moments to flap angles
-    void moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4]);
+    void moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, 
+							   float (&moments)[2], float (&angles)[4],
+							   float (&u_array)[4]));
 
 protected:
     // Parameters for the system

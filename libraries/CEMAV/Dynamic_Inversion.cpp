@@ -98,7 +98,8 @@ void DI::compute_des_moments(float curr_p, float des_p,
     moments[1] = _pid_v_pitch.get_pid() + g[1];
 }
 
-void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4]) {
+void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float (&moments)[2], float (&angles)[4],
+							   float (&u_array)[4]) {
     // Compute C_2 based on current rudder_angle
 	float constrained_omega;
 	if (curr_omega < float(100)) {
@@ -134,19 +135,27 @@ void DI::moments_to_flapangles(float curr_rud_angle_rad, float curr_omega, float
         float u1 = (moments[1] / C_1 / C_2 + u3);
         angles[2] = 0;
         angles[0] = (acosf(u1) + theta) * RAD_TO_DEG;
+		
+		// Save the u values to print out on servo channels
+		u_array[0] = u1;
+		u_array[1] = u2;
+		u_array[2] = u3;
+		u_array[3] = u4;
+		
     }
 }
 
 void DI::compute_control_pq(float curr_p, float des_p,
                             float curr_q, float des_q,
                             float curr_r, float curr_omega,
-                            float curr_rud_angle_rad, float (&angles)[4]) {
+                            float curr_rud_angle_rad, float (&angles)[4],
+							float (&u_array)[4]) {
     // We have a desired, and current rate for desired pitch and roll, use the compensator to get the desired moments
     float moments[2];
     compute_des_moments(curr_p, des_p, curr_q, des_q, curr_r, curr_omega, moments);
 
     // Compute the desired flap angles
-    moments_to_flapangles(curr_rud_angle_rad, curr_omega, moments, angles);
+    moments_to_flapangles(curr_rud_angle_rad, curr_omega, moments, angles, u_array);
 }
 
 float DI::compute_c2(float curr_omega, float curr_rud_angle_rad) {

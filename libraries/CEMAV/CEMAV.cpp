@@ -289,16 +289,16 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
     return _rudder.rudder_angle_to_pwm(angle);
 }
 
-void CEMAV::compute_control_pq(float des_p, float des_q, float curr_omega, float curr_rud_angle_rad, float (&flap_angles)[4]) {
+void CEMAV::compute_control_pq(float des_p, float des_q, float curr_omega, float curr_rud_angle_rad, float (&flap_angles)[4], float (&u_array)[4]) {
   float curr_p = _ahrs.get_gyro()[0];
   float curr_q = _ahrs.get_gyro()[1];
   float curr_r = _ahrs.get_gyro()[2];
 
     _dynamic_inv.compute_control_pq(curr_p, des_p, curr_q, des_q, curr_r, curr_omega,
-                                    curr_rud_angle_rad, flap_angles);
+                                    curr_rud_angle_rad, flap_angles, u_array);
 }
 
-void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float curr_omega, float curr_rud_angle_rad, float (&flap_angles)[4]) {
+void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float curr_omega, float curr_rud_angle_rad, float (&flap_angles)[4], float (&u_array)[4]) {
     // Compute the error in both pitch and roll
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
@@ -311,6 +311,6 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float cu
 
     // Compute control from the desired rates
 //    compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
-    compute_control_pq(u_roll_rate, u_pitch_rate, curr_omega, curr_rud_angle_rad, flap_angles);
+    compute_control_pq(u_roll_rate, u_pitch_rate, curr_omega, curr_rud_angle_rad, flap_angles, u_array);
 
 }

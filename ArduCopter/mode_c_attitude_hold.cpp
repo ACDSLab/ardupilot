@@ -103,10 +103,10 @@ void Copter::ModeCoandaAtt::run()
 
 	// CEMAV method contains both loops, first we compute the desired rates from the angle error and PID, then we send the rate error to LQR
 	float flap_angles[4];
-
+	float u_array[4];
 	// Compute the flap angles
 //        cemav->compute_control_pitch_roll(des_pitch, des_roll, flap_angles);
-	cemav->compute_control_pitch_roll(des_pitch, des_roll, curr_rpm, u_rud_constrained, flap_angles);
+	cemav->compute_control_pitch_roll(des_pitch, des_roll, curr_rpm, u_rud_constrained, flap_angles, u_array);
 
 		
 	if (counter == cemav->get_control_counter()) {
