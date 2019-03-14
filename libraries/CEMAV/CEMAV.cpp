@@ -137,8 +137,12 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         AP_SUBGROUPINFO(_flap2, "FL2_", 7, CEMAV, Flap),
         AP_SUBGROUPINFO(_flap3, "FL3_", 8, CEMAV, Flap),
         AP_SUBGROUPINFO(_flap4, "FL4_", 9, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap5, "FL5_", 10, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap6, "FL6_", 11, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap7, "FL7_", 12, CEMAV, Flap),
+        AP_SUBGROUPINFO(_flap8, "FL8_", 13, CEMAV, Flap),
 
-        AP_SUBGROUPINFO(_rudder, "RUD_", 10, CEMAV, Rudder),
+        AP_SUBGROUPINFO(_rudder, "RUD_", 14, CEMAV, Rudder),
 
         // @Param: MAX_P_DS
         // @DisplayName: Maximum p angular velocity in deg/s
@@ -146,7 +150,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_P_DS", 11, CEMAV, _max_p_ds, 720.0f),
+        AP_GROUPINFO("MAX_P_DS", 15, CEMAV, _max_p_ds, 720.0f),
 
         // @Param: MAX_Q_DS
         // @DisplayName: Maximum q angular velocity in deg/s
@@ -154,9 +158,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_Q_DS", 12, CEMAV, _max_q_ds, 720.0f),
+        AP_GROUPINFO("MAX_Q_DS", 16, CEMAV, _max_q_ds, 720.0f),
 
-        AP_SUBGROUPINFO(_lqr, "PQ_", 13, CEMAV, LQR),
+        AP_SUBGROUPINFO(_lqr, "PQ_", 17, CEMAV, LQR),
 
         // @Param: MAX_PIT
         // @DisplayName: Maximum pitch angle in deg
@@ -164,7 +168,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_PIT", 14, CEMAV, _max_pitch_angle, 45.0f),
+        AP_GROUPINFO("MAX_PIT", 18, CEMAV, _max_pitch_angle, 45.0f),
 
         // @Param: MAX_ROL
         // @DisplayName: Maximum roll angle in deg
@@ -172,7 +176,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_ROL", 15, CEMAV, _max_roll_angle, 45.0f),
+        AP_GROUPINFO("MAX_ROL", 19, CEMAV, _max_roll_angle, 45.0f),
 
         // @Param: MAX_D_YAW
         // @DisplayName: Maximum change in yaw angle in delta deg
@@ -180,14 +184,14 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("MAX_D_YAW", 16, CEMAV, _max_delta_yaw_angle, 720.0f),
+        AP_GROUPINFO("MAX_D_YAW", 20, CEMAV, _max_delta_yaw_angle, 720.0f),
 
-        AP_SUBGROUPINFO(_pid_pitch, "PIT_", 17, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_pitch, "PIT_", 21, CEMAV, AC_PID),
 
-        AP_SUBGROUPINFO(_pid_roll, "ROL_", 18, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_roll, "ROL_", 22, CEMAV, AC_PID),
 
-        AP_GROUPINFO("COUNTER", 19, CEMAV, _count_max, 1),
-        AP_GROUPINFO("YAW_TRIM", 20, CEMAV, _yaw_trim_angle, 0.0f),
+        AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 1),
+        AP_GROUPINFO("YAW_TRIM", 24, CEMAV, _yaw_trim_angle, 0.0f),
 
 
         AP_GROUPEND

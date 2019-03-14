@@ -94,9 +94,9 @@ void Copter::ModeManual::run()
 
 
         // DEBUG
-        float curr_rpm = copter.rpm_sensor.get_rpm(0);
-        uint8_t throttle_stick_percent = channel_throttle->percent_input();
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
+//        float curr_rpm = copter.rpm_sensor.get_rpm(0);
+//        uint8_t throttle_stick_percent = channel_throttle->percent_input();
+//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
 //        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) throttle_stick_percent);
     } else {
         counter += 1;

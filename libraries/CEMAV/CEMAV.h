@@ -92,11 +92,15 @@ private:
     AC_PID   _pid_pitch;
     AC_PID   _pid_roll;
 
-    // Servo Calibration for 4 flaps and 1 rudder
+    // Servo Calibration for 8 flaps and 1 rudder
     Flap _flap1;
     Flap _flap2;
     Flap _flap3;
     Flap _flap4;
+    Flap _flap5;
+    Flap _flap6;
+    Flap _flap7;
+    Flap _flap8;
 
     Rudder _rudder;
 
