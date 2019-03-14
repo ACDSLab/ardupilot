@@ -1266,6 +1266,8 @@ public:
 
     virtual bool init(bool ignore_checks) override; // called when switching into this new mode
     virtual void run() override; // called at 400 Hz
+    // Defined in the mode of how we want to use min and max flap angle
+    float rescale_flaps(float input);
 
     bool requires_GPS() const override { return false; }
     bool has_manual_throttle() const override { return true; }
@@ -1279,7 +1281,8 @@ protected:
 
 private:
     int counter = 1;
-
+    float max_angle = 90;
+    float min_angle = 30;
 
 };
 

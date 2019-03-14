@@ -193,6 +193,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 1),
         AP_GROUPINFO("YAW_TRIM", 24, CEMAV, _yaw_trim_angle, 0.0f),
 
+        AP_GROUPINFO("MAX_FLAP_ANG", 25, CEMAV, _max_flap_angle, 90.0f),
+
+        AP_GROUPINFO("MIN_FLAP_ANG", 26, CEMAV, _min_flap_angle, 30.0f),
 
         AP_GROUPEND
 
@@ -284,6 +287,18 @@ uint16_t CEMAV::flap_angle_to_pwm(float angle, int flap_number) {
         case 4:
             pwm = _flap4.flap_angle_to_pwm(angle);
             break;
+	    case 5:
+	        pwm = _flap5.flap_angle_to_pwm(angle);
+	        break;
+        case 6:
+            pwm = _flap6.flap_angle_to_pwm(angle);
+            break;
+        case 7:
+            pwm = _flap7.flap_angle_to_pwm(angle);
+            break;
+	    case 8:
+	        pwm = _flap8.flap_angle_to_pwm(angle);
+	        break;
 	}
 	return pwm;
 }

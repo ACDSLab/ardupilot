@@ -62,7 +62,10 @@ public:
     // Accessor for controller count max
     int get_control_counter() {return _count_max;}
 
-    //
+    // Accessor for the min and max flap angles
+    float get_min_flap_angle() {return _min_flap_angle;}
+    float get_max_flap_angle() {return _max_flap_angle;}
+
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
 
@@ -111,6 +114,11 @@ private:
 
     // Trim Angle for Yaw
     AP_Float _yaw_trim_angle;
+
+    // Minimum and maximum flap angle
+    AP_Float _max_flap_angle;
+    AP_Float _min_flap_angle;
+
 
 
 };

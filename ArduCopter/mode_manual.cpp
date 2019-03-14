@@ -16,8 +16,16 @@ bool Copter::ModeManual::init(bool ignore_checks)
     // set target altitude to zero for reporting
     pos_control->set_alt_target(0);
 
+    // Set the min and max angle from cemav
+    max_angle = cemav->get_max_flap_angle();
+    min_angle = cemav->get_min_flap_angle();
+
 
     return true;
+}
+
+float Copter::ModeManual::rescale_flaps(float input_command) {
+    return (max_angle - min_angle) * input_command + min_angle;
 }
 
 // manual_run - runs the main manual function that passes rc input as motor commands
@@ -79,16 +87,36 @@ void Copter::ModeManual::run()
     // Set rudder angle pwm
     SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, u_yaw_rate_pwm); */
 
+
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 
-        // Servo Cal Flaps
-        float roll_flap_input = 90 * channel_roll->norm_input_dz();
-        float pitch_flap_input = 90 * channel_pitch->norm_input_dz();
+        // Servo Cal Flaps -> stick goes from min flap angle to max flap angle
+        float lateral_command = channel_roll->norm_input_dz();
+        float longitudinal_command = channel_pitch->norm_input_dz();
+        // Fore and Aft Flap Pairs
+        float F1_c = rescale_flaps(constrain_value(lateral_command, (float) 0, (float) 1));
+        float F8_c = F1_c;
 
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(roll_flap_input, 1));
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(-1 * pitch_flap_input, 2));
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1 * roll_flap_input, 3));
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(pitch_flap_input, 4));
+        float F4_c = rescale_flaps(constrain_value(-lateral_command, (float) 0, (float) 1));
+        float F5_c = F4_c;
+
+        // Port and Starboard Flap Pairs
+        float F2_c = rescale_flaps(constrain_value(longitudinal_command, (float) 0, (float) 1));
+        float F3_c = F2_c;
+
+        float F6_c = rescale_flaps(constrain_value(-longitudinal_command, (float) 0, (float) 1));
+        float F7_c = F6_c;
+
+
+        // Set the output PWM's for the 8 flap vehicle
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(F1_c, 1));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(F2_c, 2));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(F3_c, 3));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(F4_c, 4));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, cemav->flap_angle_to_pwm(F5_c, 5));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, cemav->flap_angle_to_pwm(F6_c, 6));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, cemav->flap_angle_to_pwm(F7_c, 7));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, cemav->flap_angle_to_pwm(F8_c, 8));
 
 
 
