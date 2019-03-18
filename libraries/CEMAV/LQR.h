@@ -15,7 +15,7 @@ class LQR {
 public:
     static const struct AP_Param::GroupInfo var_info[];
 
-    void compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, float (&flap_angles)[4]);
+    void compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, float (&flap_angles)[8]);
 
 
 protected:
@@ -27,6 +27,18 @@ protected:
     AP_Float        _lq_32;
     AP_Float        _lq_41;
     AP_Float        _lq_42;
+	AP_Float		_lq_51;
+	AP_Float		_lq_52;
+	AP_Float		_lq_61;
+	AP_Float		_lq_62;
+	AP_Float		_lq_71;
+	AP_Float		_lq_72;
+	AP_Float		_lq_81;
+	AP_Float		_lq_82;
+	
+	// Trim value for Flap angles (used to compute LQR gains)
+	AP_Float		_flap_trim_angle;
+	
 };
 
 #endif

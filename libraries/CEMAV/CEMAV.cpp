@@ -190,12 +190,14 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_SUBGROUPINFO(_pid_roll, "ROL_", 22, CEMAV, AC_PID),
 
-        AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 1),
+        AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 4),
         AP_GROUPINFO("YAW_TRIM", 24, CEMAV, _yaw_trim_angle, 0.0f),
 
         AP_GROUPINFO("MAX_FLAP_ANG", 25, CEMAV, _max_flap_angle, 90.0f),
 
         AP_GROUPINFO("MIN_FLAP_ANG", 26, CEMAV, _min_flap_angle, 30.0f),
+		
+		AP_GROUPINFO("FLAP_TRIM", 27, CEMAV, _flap_trim_angle, 30.0f),
 
         AP_GROUPEND
 
