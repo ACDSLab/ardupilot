@@ -96,7 +96,7 @@ void Copter::ModeCoanda::run()
 	float des_q = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
 	float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
 	//
-	float flap_angles[4];
+	float flap_angles[8];
 	cemav->compute_control_pq(des_p, des_q, flap_angles);
 		
 	if (counter >= cemav->get_control_counter()) {
@@ -107,14 +107,14 @@ void Copter::ModeCoanda::run()
 		// Set the rudder PWM
 		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 		
-		float F1_c = constrain_value(flap_angles[0], (float) 30, (float) 90)
-		float F2_c = constrain_value(flap_angles[1], (float) 30, (float) 90)
-		float F3_c = constrain_value(flap_angles[2], (float) 30, (float) 90)
-		float F4_c = constrain_value(flap_angles[3], (float) 30, (float) 90)
-		float F5_c = constrain_value(flap_angles[4], (float) 30, (float) 90)
-		float F6_c = constrain_value(flap_angles[5], (float) 30, (float) 90)
-		float F7_c = constrain_value(flap_angles[6], (float) 30, (float) 90)
-		float F8_c = constrain_value(flap_angles[7], (float) 30, (float) 90)
+		float F1_c = constrain_value(flap_angles[0], (float) 30, (float) 90);
+		float F2_c = constrain_value(flap_angles[1], (float) 30, (float) 90);
+		float F3_c = constrain_value(flap_angles[2], (float) 30, (float) 90);
+		float F4_c = constrain_value(flap_angles[3], (float) 30, (float) 90);
+		float F5_c = constrain_value(flap_angles[4], (float) 30, (float) 90);
+		float F6_c = constrain_value(flap_angles[5], (float) 30, (float) 90);
+		float F7_c = constrain_value(flap_angles[6], (float) 30, (float) 90);
+		float F8_c = constrain_value(flap_angles[7], (float) 30, (float) 90);
 
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(F1_c, 1));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(F2_c, 2));

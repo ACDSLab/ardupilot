@@ -107,7 +107,7 @@ void Copter::ModeCoandaAtt::run()
         float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
 
         // CEMAV method contains both loops, first we compute the desired rates from the angle error and PID, then we send the rate error to LQR
-        float flap_angles[4];
+        float flap_angles[8];
         cemav->compute_control_pitch_roll(des_pitch, des_roll, flap_angles);
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(flap_angles[0], 1));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(flap_angles[1], 2));

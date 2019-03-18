@@ -197,8 +197,6 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_GROUPINFO("MIN_FLAP_ANG", 26, CEMAV, _min_flap_angle, 30.0f),
 		
-		AP_GROUPINFO("FLAP_TRIM", 27, CEMAV, _flap_trim_angle, 30.0f),
-
         AP_GROUPEND
 
 };
@@ -309,13 +307,13 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
     return _rudder.rudder_angle_to_pwm(angle);
 }
 
-void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[4]) {
+void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[8]) {
   float cur_p = _ahrs.get_gyro()[0];
   float cur_q = _ahrs.get_gyro()[1];
   _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
 }
 
-void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[4]) {
+void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[8]) {
     // Compute the error in both pitch and roll
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
