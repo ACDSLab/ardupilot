@@ -33,13 +33,6 @@ float Copter::ModeManual::rescale_flaps(float input_command) {
 void Copter::ModeManual::run()
 {
 
-   // if not armed set throttle to zero and exit immediately
-   if (!motors->armed() ) {
-       // zero_throttle_and_relax_ac();
-	   SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
-	   // Removed the return statement, because we want to be able to move the control surfaces even without arming.
-   }
-
     // clear landing flag
     set_land_complete(false);
 
@@ -88,10 +81,10 @@ void Copter::ModeManual::run()
 	float lateral_command = channel_roll->norm_input_dz();
 	float longitudinal_command = channel_pitch->norm_input_dz();
 	// Fore and Aft Flap Pairs
-	float F1_c = rescale_flaps(constrain_value(lateral_command, (float) 0, (float) 1));
+	float F1_c = rescale_flaps(constrain_value(-lateral_command, (float) 0, (float) 1));
 	float F8_c = F1_c;
 
-	float F4_c = rescale_flaps(constrain_value(-lateral_command, (float) 0, (float) 1));
+	float F4_c = rescale_flaps(constrain_value(lateral_command, (float) 0, (float) 1));
 	float F5_c = F4_c;
 
 	// Port and Starboard Flap Pairs
@@ -104,10 +97,16 @@ void Copter::ModeManual::run()
     if (counter >= cemav->get_control_counter()) {
         counter = 1;
 		
-		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+		   // if not armed set throttle to zero and exit immediately
+		if (!motors->armed() ) {
+			// zero_throttle_and_relax_ac();
+			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
+			// Removed the return statement, because we want to be able to move the control surfaces even without arming.
+		} else {
+			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+		}
+		
 		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
-
-
 
         // Set the output PWM's for the 8 flap vehicle
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(F1_c, 1));
@@ -119,12 +118,6 @@ void Copter::ModeManual::run()
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, cemav->flap_angle_to_pwm(F7_c, 7));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, cemav->flap_angle_to_pwm(F8_c, 8));
 
-
-        // DEBUG
-//        float curr_rpm = copter.rpm_sensor.get_rpm(0);
-//        uint8_t throttle_stick_percent = channel_throttle->percent_input();
-//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
-//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) throttle_stick_percent);
     } else {
         counter += 1;
     }

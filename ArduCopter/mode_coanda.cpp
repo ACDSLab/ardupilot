@@ -25,16 +25,8 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
 void Copter::ModeCoanda::run()
 {
 
-    // if not armed set throttle to zero and exit immediately
-    if (!motors->armed())  {
-        // zero_throttle_and_relax_ac();
-	    SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
-        // return;
-    }
-
 	// clear landing flag
     set_land_complete(false);
-
 
 
 	/**************************
@@ -102,7 +94,14 @@ void Copter::ModeCoanda::run()
 	if (counter >= cemav->get_control_counter()) {
         counter = 1;
 		
-		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+		    // if not armed set throttle to zero and exit immediately
+		if (!motors->armed())  {
+			// zero_throttle_and_relax_ac();
+			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
+			// return;
+		} else {
+			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+		}
 		
 		// Set the rudder PWM
 		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
@@ -128,7 +127,7 @@ void Copter::ModeCoanda::run()
         /**************************
         * Debug printing
         ***************************/
-        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
+//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
 //        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
     } else {
         counter += 1;
