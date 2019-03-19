@@ -45,7 +45,7 @@ void Copter::ModeCoanda::run()
 	* RPM Controller
 	***************************/
 	// Get rpm value from RPM pin (the sensor is in AP_RPM)
-	float curr_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
+//	float curr_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
 /*    // Get the pilot input percentage
     uint8_t throttle_stick_percent = channel_throttle->percent_input();  // This gives us something 0 - 100

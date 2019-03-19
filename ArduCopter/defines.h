@@ -55,7 +55,8 @@ enum control_mode_t {
     FOLLOW    =    23,  // follow attempts to follow another vehicle or ground station
     MANUAL    =    24,  // Pass through RC input to PWM, no stabilization
     COANDA  =      25, // Airframe stabilized to zero pitch and yaw through LQR control, no manual control
-    C_ATT   =      26
+    C_ATT   =      26,
+    MANUAL_CF =    27,
 };
 
 enum mode_reason_t {

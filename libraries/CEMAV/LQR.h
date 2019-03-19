@@ -17,7 +17,6 @@ public:
 
     void compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, float (&flap_angles)[8]);
 
-
 protected:
     AP_Float        _lq_11;
     AP_Float        _lq_12;

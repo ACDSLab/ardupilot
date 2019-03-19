@@ -996,6 +996,7 @@ private:
     ModeManual mode_manual;
     ModeCoanda mode_coanda;
     ModeCoandaAtt mode_coanda_attitude;
+    ModeManualCF mode_manual_crossfeed;
 
     // mode.cpp
     Mode *mode_from_mode_num(const uint8_t mode);

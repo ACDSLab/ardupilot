@@ -14,6 +14,7 @@
 #include <SRV_Channel/SRV_Channel.h> // Set servo angle max
 #include <CEMAV/Servo_Cal.h>
 #include <CEMAV/LQR.h>
+#include <CEMAV/CrossFeed.h>
 
 #ifndef CEMAV_H_
 #define CEMAV_H_
@@ -37,7 +38,14 @@ public:
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
     float compute_rpm_control(float des_rpm, float curr_rpm);
+
+    // LQR Control
     void compute_control_pq(float des_p, float des_q, float (&flap_angles)[8]);
+
+    // Cross Feed Algorithm
+    void compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M);
+
+    // Attitude hold
     void compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[8]);
 
 
@@ -108,6 +116,8 @@ private:
     Rudder _rudder;
 
     LQR _lqr;
+
+    CrossFeed _cf;
 
     // Counter to delay controller calculation
     AP_Int16 _count_max;

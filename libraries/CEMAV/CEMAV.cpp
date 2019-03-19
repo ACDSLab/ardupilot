@@ -196,6 +196,8 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         AP_GROUPINFO("MAX_FLAP_ANG", 25, CEMAV, _max_flap_angle, 90.0f),
 
         AP_GROUPINFO("MIN_FLAP_ANG", 26, CEMAV, _min_flap_angle, 30.0f),
+
+        AP_SUBGROUPINFO(_cf, "LM_CF_", 27, CEMAV, CrossFeed),
 		
         AP_GROUPEND
 
@@ -326,4 +328,8 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
 
     // Compute controll from the desired rates
     compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
+}
+
+void CEMAV::compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M) {
+    _cf.compute_crossfeed_moments(lat_c, lon_c, cf_L, cf_M);
 }
