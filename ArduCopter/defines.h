@@ -56,7 +56,7 @@ enum control_mode_t {
     MANUAL    =    24,  // Pass through RC input to PWM, no stabilization
     COANDA  =      25, // Airframe stabilized to zero pitch and yaw through LQR control, no manual control
     C_ATT   =      26,
-    MANUAL_CF =    27,
+    MAN_CF =    27
 };
 
 enum mode_reason_t {

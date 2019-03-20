@@ -1304,7 +1304,7 @@ public:
 
 protected:
 
-    const char *name() const override { return "MANUAL_CF"; }
+    const char *name() const override { return "MAN_CF"; }
     const char *name4() const override { return "MNCF"; }
 
 private:

@@ -23,12 +23,12 @@ const AP_Param::GroupInfo CrossFeed::var_info[] = {
         // @Param: LAT_SC
         // @DisplayName:
         // @Description:
-        AP_GROUPINFO("LAT_SC", 2, CrossFeed, _lateral_scale, 1),
+        AP_GROUPINFO("LAT_SC", 3, CrossFeed, _lateral_scale, 1),
 
         // @Param: LON_SC
         // @DisplayName:
         // @Description:
-        AP_GROUPINFO("LON_SC", 2, CrossFeed, _longitudinal_scale, 1),
+        AP_GROUPINFO("LON_SC", 4, CrossFeed, _longitudinal_scale, 1),
 
         AP_GROUPEND
 };
