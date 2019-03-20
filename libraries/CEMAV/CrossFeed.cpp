@@ -35,6 +35,6 @@ const AP_Param::GroupInfo CrossFeed::var_info[] = {
 
 void CrossFeed::compute_crossfeed_moments(float input_L, float input_M, float& cf_L, float& cf_M) {
     float mu = _Hr / _Ib;
-    cf_L = (_c*_c*_Ib) / (_c*_c + mu*mu ) * input_L*_lateral_scale + (-_c*mu*_Ib) / (_c*_c + mu*mu ) * input_M*_longitudinal_scale;
-    cf_M = (_c*mu*_Ib) / (_c*_c + mu*mu ) * input_L*_lateral_scale + ( _c*_c*_Ib) / (_c*_c + mu*mu ) * input_M*_longitudinal_scale;
+    cf_L = (_c*_c) / (_c*_c + mu*mu ) * input_L*_lateral_scale + (_c*mu) / (_c*_c + mu*mu ) * input_M*_longitudinal_scale;
+    cf_M = (-_c*mu) / (_c*_c + mu*mu ) * input_L*_lateral_scale + ( _c*_c) / (_c*_c + mu*mu ) * input_M*_longitudinal_scale;
 }
