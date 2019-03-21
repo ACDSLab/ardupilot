@@ -55,7 +55,7 @@ void Copter::ModeManualCF::run()
     // The input_L and input_M are going to be scaled lateral and longidinal commands (respectively)
 	// Servo Cal Flaps -> stick goes from min flap angle to max flap angle
 	float lateral_command = channel_roll->norm_input_dz();
-	float longitudinal_command = channel_pitch->norm_input_dz();
+	float longitudinal_command = -channel_pitch->norm_input_dz();
 
 
 	// Declare the crossfed moment commands
