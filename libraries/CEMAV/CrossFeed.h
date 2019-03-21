@@ -17,11 +17,10 @@ public:
     void compute_crossfeed_moments(float input_L, float input_M, float& cf_L, float& cf_M);
 
 protected:
-    AP_Float        _c;
-    AP_Float        _Hr;
-    AP_Float        _Ib;
-    AP_Float        _lateral_scale;
-    AP_Float        _longitudinal_scale;
+    AP_Float        _cf_l1;
+    AP_Float        _cf_12;
+    AP_Float        _cf_21;
+    AP_Float        _cf_22;
 
 };
 
