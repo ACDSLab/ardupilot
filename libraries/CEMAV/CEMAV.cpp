@@ -199,6 +199,11 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_SUBGROUPINFO(_cf, "LM_CF_", 27, CEMAV, CrossFeed),
 		
+		AP_SUBGROUPINFO(_pid_rate_lat, "RAT_LAT_", 28, CEMAV, AC_PID),
+
+		AP_SUBGROUPINFO(_pid_rate_long, "RAT_LONG_", 29, CEMAV, AC_PID),
+
+		
         AP_GROUPEND
 
 };
