@@ -54,9 +54,10 @@ enum control_mode_t {
     FLOWHOLD  =    22,  // FLOWHOLD holds position with optical flow without rangefinder
     FOLLOW    =    23,  // follow attempts to follow another vehicle or ground station
     MANUAL    =    24,  // Pass through RC input to PWM, no stabilization
-    COANDA  =      25, // Airframe stabilized to zero pitch and yaw through LQR control, no manual control
-    C_ATT   =      26,
-    MAN_CF =    27
+    MAN_CF =       25,  // Manual passthrough with crossfeeding
+    PQFEED  =      26, // Airframe stabilized to zero pitch and yaw rate through LQR control + crossfeed
+    PQPID  =       27, // Airframe stabilized to zero pitch and yaw rate through PID control + crossfeed
+    C_ATT   =      28,
 };
 
 enum mode_reason_t {

@@ -161,17 +161,23 @@ Copter::Mode *Copter::mode_from_mode_num(const uint8_t mode)
             ret = &mode_manual;
             break;
 
-        case COANDA:
-            ret = &mode_coanda;
+        case MAN_CF:
+            ret = &mode_manual_crossfeed;
+            break;
+
+        case PQFEED:
+            ret = &mode_pqfeedback;
+            break;
+
+        case PQPID:
+            ret = &mode_pq_pid;
             break;
 
         case C_ATT:
             ret = &mode_coanda_attitude;
             break;
 
-        case MAN_CF:
-            ret = &mode_manual_crossfeed;
-            break;
+
 
         default:
             break;

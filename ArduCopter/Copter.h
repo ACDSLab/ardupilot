@@ -994,9 +994,12 @@ private:
     ModeFlowHold mode_flowhold;
 #endif
     ModeManual mode_manual;
-    ModeCoanda mode_coanda;
-    ModeCoandaAtt mode_coanda_attitude;
     ModeManualCF mode_manual_crossfeed;
+
+    ModePQFeedback mode_pqfeedback;
+    ModePQPID mode_pq_pid;
+
+    ModeCoandaAtt mode_coanda_attitude;
 
     // mode.cpp
     Mode *mode_from_mode_num(const uint8_t mode);

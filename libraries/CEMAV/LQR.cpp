@@ -85,24 +85,52 @@ const AP_Param::GroupInfo LQR::var_info[] = {
         // @Description:
         AP_GROUPINFO("LQ_82", 15, LQR, _lq_82, -3.4472),
 		
-		// @Param: LQ_82
+		// @Param: FLAP_TRIM
         // @DisplayName:
         // @Description:
-		AP_GROUPINFO("FLAP_TRIM", 27, LQR, _flap_trim_angle, 30.0f),
+		AP_GROUPINFO("FLAP_TRIM", 16, LQR, _flap_trim_angle, 30.0f),
+
+        // @Param: LQ_M_11
+        // @DisplayName:
+        // @Description:
+        AP_GROUPINFO("LQ_M_11", 17, LQR, _lq_moment_11, -3.4472),
+
+        // @Param: LQ_M_12
+        // @DisplayName:
+        // @Description:
+        AP_GROUPINFO("LQ_M_12", 18, LQR, _lq_moment_12, -1.4279),
+
+        // @Param: LQ_M_21
+        // @DisplayName:
+        // @Description:
+        AP_GROUPINFO("LQ_M_21", 19, LQR, _lq_moment_21, -1.4279),
+
+        // @Param: LQ_M_22
+        // @DisplayName:
+        // @Description:
+        AP_GROUPINFO("LQ_M_22", 20, LQR, _lq_moment_22, -3.4472),
 
 		
         AP_GROUPEND
 };
 
-void LQR::compute_control_pq(float cur_p, float cur_q, float des_p, float des_q, float (&flap_angles)[8]) {
-  float err_p = des_p - cur_p; // Difference is in rad/sec
-  float err_q = des_q - cur_q; // Difference is in rad/sec
-  flap_angles[0] = (_lq_11*err_p + _lq_12*err_q) + _flap_trim_angle;
-  flap_angles[1] = (_lq_21*err_p + _lq_22*err_q) + _flap_trim_angle;
-  flap_angles[2] = (_lq_31*err_p + _lq_32*err_q) + _flap_trim_angle;
-  flap_angles[3] = (_lq_41*err_p + _lq_42*err_q) + _flap_trim_angle;
-  flap_angles[4] = (_lq_51*err_p + _lq_52*err_q) + _flap_trim_angle;
-  flap_angles[5] = (_lq_61*err_p + _lq_62*err_q) + _flap_trim_angle;
-  flap_angles[6] = (_lq_71*err_p + _lq_72*err_q) + _flap_trim_angle;
-  flap_angles[7] = (_lq_81*err_p + _lq_82*err_q) + _flap_trim_angle;
+void LQR::compute_flaps_pq(float cur_p, float cur_q, float des_p, float des_q, float (&flap_angles)[8]) {
+    float err_p = des_p - cur_p; // Difference is in rad/sec
+    float err_q = des_q - cur_q; // Difference is in rad/sec
+    flap_angles[0] = (_lq_11*err_p + _lq_12*err_q) + _flap_trim_angle;
+    flap_angles[1] = (_lq_21*err_p + _lq_22*err_q) + _flap_trim_angle;
+    flap_angles[2] = (_lq_31*err_p + _lq_32*err_q) + _flap_trim_angle;
+    flap_angles[3] = (_lq_41*err_p + _lq_42*err_q) + _flap_trim_angle;
+    flap_angles[4] = (_lq_51*err_p + _lq_52*err_q) + _flap_trim_angle;
+    flap_angles[5] = (_lq_61*err_p + _lq_62*err_q) + _flap_trim_angle;
+    flap_angles[6] = (_lq_71*err_p + _lq_72*err_q) + _flap_trim_angle;
+    flap_angles[7] = (_lq_81*err_p + _lq_82*err_q) + _flap_trim_angle;
+}
+
+void LQR::compute_commands_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2]) {
+    float err_p = des_p - cur_p; // Difference is in rad/sec
+    float err_q = des_q - cur_q; // Difference is in rad/sec
+
+    commands[0] = (_lq_moment_11*err_p + _lq_moment_12*err_q);
+    commands[1] = (_lq_moment_21*err_p + _lq_moment_22*err_q);
 }

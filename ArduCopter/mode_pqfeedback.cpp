@@ -1,12 +1,12 @@
 #include "Copter.h"
 
 /*
- * Init and run calls for mode coanda flight mode
+ * Init and run calls for mode pqfeedback flight mode
  */
 
 
 // stabilize_init - initialise stabilize controller
-bool Copter::ModeCoanda::init(bool ignore_checks)
+bool Copter::ModePQFeedback::init(bool ignore_checks)
 {
     // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
     //if (motors->armed() && ap.land_complete && !copter.flightmode->has_manual_throttle() &&
@@ -22,7 +22,7 @@ bool Copter::ModeCoanda::init(bool ignore_checks)
 
 // stabilize_run - runs the main stabilize controller
 // should be called at 100hz or more
-void Copter::ModeCoanda::run()
+void Copter::ModePQFeedback::run()
 {
 
 	// clear landing flag
@@ -79,17 +79,43 @@ void Copter::ModeCoanda::run()
 	// SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1*roll_flap_input, 3));
 	// SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 4));
 
-	/**************************
-	* Roll and Pitch LQR
-	***************************/
+	/********************************
+	* Roll and Pitch PQ Feedback
+	*********************************/
 	// Get the pilot input from pitch channel
 	float q_stick_norm = -1 * channel_pitch->norm_input_dz();  // -1 to 1 The stick is reversed!
 	float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1
 	float des_q = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
 	float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
 	//
+
+	/* If we wanted to compute the flap angle values directly (crossfeed in its current form doesn't work for this case)
 	float flap_angles[8];
-	cemav->compute_control_pq(des_p, des_q, flap_angles);
+	cemav->pq_feedback_flaps(des_p, des_q, flap_angles);
+    */
+
+	// Compute the longitudinal and lateral commands using pq feedback
+	float commands[2];
+	cemav->pq_feedback_commands(des_p, des_q, commands);
+
+    // Declare the crossfed moment commands
+    float cf_L;
+    float cf_M;
+	// Perform crossfeed on the desired inputs
+    cemav->compute_crossfeed_LM(commands[0], commands[1], cf_L, cf_M);
+    // Fore and Aft Flap Pairs
+    float F1_c = cemav->rescale_flaps(constrain_value(-cf_M, (float) 0, (float) 1));
+    float F8_c = F1_c;
+
+    float F4_c = cemav->rescale_flaps(constrain_value(cf_M, (float) 0, (float) 1));
+    float F5_c = F4_c;
+
+    // Port and Starboard Flap Pairs
+    float F2_c = cemav->rescale_flaps(constrain_value(cf_L, (float) 0, (float) 1));
+    float F3_c = F2_c;
+
+    float F6_c = cemav->rescale_flaps(constrain_value(-cf_L, (float) 0, (float) 1));
+    float F7_c = F6_c;
 		
 	if (counter >= cemav->get_control_counter()) {
         counter = 1;
@@ -106,14 +132,14 @@ void Copter::ModeCoanda::run()
 		// Set the rudder PWM
 		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 		
-		float F1_c = constrain_value(flap_angles[0], (float) 30, (float) 90);
-		float F2_c = constrain_value(flap_angles[1], (float) 30, (float) 90);
-		float F3_c = constrain_value(flap_angles[2], (float) 30, (float) 90);
-		float F4_c = constrain_value(flap_angles[3], (float) 30, (float) 90);
-		float F5_c = constrain_value(flap_angles[4], (float) 30, (float) 90);
-		float F6_c = constrain_value(flap_angles[5], (float) 30, (float) 90);
-		float F7_c = constrain_value(flap_angles[6], (float) 30, (float) 90);
-		float F8_c = constrain_value(flap_angles[7], (float) 30, (float) 90);
+//		float F1_c = constrain_value(flap_angles[0], (float) 30, (float) 90);
+//		float F2_c = constrain_value(flap_angles[1], (float) 30, (float) 90);
+//		float F3_c = constrain_value(flap_angles[2], (float) 30, (float) 90);
+//		float F4_c = constrain_value(flap_angles[3], (float) 30, (float) 90);
+//		float F5_c = constrain_value(flap_angles[4], (float) 30, (float) 90);
+//		float F6_c = constrain_value(flap_angles[5], (float) 30, (float) 90);
+//		float F7_c = constrain_value(flap_angles[6], (float) 30, (float) 90);
+//		float F8_c = constrain_value(flap_angles[7], (float) 30, (float) 90);
 
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap1, cemav->flap_angle_to_pwm(F1_c, 1));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap2, cemav->flap_angle_to_pwm(F2_c, 2));

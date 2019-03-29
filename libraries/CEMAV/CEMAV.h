@@ -37,10 +37,16 @@ public:
 
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
+    float compute_lat_rate_control(float des_lat_rate);
+    float compute_long_rate_control(float des_long_rate);
+
+
     float compute_rpm_control(float des_rpm, float curr_rpm);
 
-    // LQR Control
-    void compute_control_pq(float des_p, float des_q, float (&flap_angles)[8]);
+    // PQFeedback
+    void pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8]);  // Compute pq feedback and get the flaps angles
+    void pq_feedback_commands(float des_p, float des_q, float (&commands)[2]);  // Compute pq feedback and get commands
+
 
     // Cross Feed Algorithm
     void compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M);
@@ -74,6 +80,9 @@ public:
     float get_min_flap_angle() {return _min_flap_angle;}
     float get_max_flap_angle() {return _max_flap_angle;}
 
+    // Function to scale commands (0 to 1) to flap angles
+    float rescale_flaps(float input_command);
+
 
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
 
@@ -99,6 +108,9 @@ private:
 
     // PID controllers
     AC_PID   _pid_rate_yaw; // Parameters for AC_PID class yaw channel
+    AC_PID   _pid_rate_lat;
+    AC_PID   _pid_rate_long;
+
     AC_PID   _pid_rpm;
     AC_PID   _pid_pitch;
     AC_PID   _pid_roll;

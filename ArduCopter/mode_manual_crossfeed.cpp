@@ -16,17 +16,10 @@ bool Copter::ModeManualCF::init(bool ignore_checks)
     // set target altitude to zero for reporting
     pos_control->set_alt_target(0);
 
-    // Set the min and max angle from cemav
-    max_angle = cemav->get_max_flap_angle();
-    min_angle = cemav->get_min_flap_angle();
-
 
     return true;
 }
 
-float Copter::ModeManualCF::rescale_flaps(float input_command) {
-    return (max_angle - min_angle) * input_command + min_angle;
-}
 
 // manual_run - runs the main manual function that passes rc input as motor commands
 // should be called at 100hz or more
@@ -64,17 +57,17 @@ void Copter::ModeManualCF::run()
     // compute the crossfed moment commands
     cemav->compute_crossfeed_LM(lateral_command, longitudinal_command, cf_L, cf_M);
 	// Fore and Aft Flap Pairs
-	float F1_c = rescale_flaps(constrain_value(-cf_M, (float) 0, (float) 1));
+	float F1_c = cemav->rescale_flaps(constrain_value(-cf_M, (float) 0, (float) 1));
 	float F8_c = F1_c;
 
-	float F4_c = rescale_flaps(constrain_value(cf_M, (float) 0, (float) 1));
+	float F4_c = cemav->rescale_flaps(constrain_value(cf_M, (float) 0, (float) 1));
 	float F5_c = F4_c;
 
 	// Port and Starboard Flap Pairs
-	float F2_c = rescale_flaps(constrain_value(cf_L, (float) 0, (float) 1));
+	float F2_c = cemav->rescale_flaps(constrain_value(cf_L, (float) 0, (float) 1));
 	float F3_c = F2_c;
 
-	float F6_c = rescale_flaps(constrain_value(-cf_L, (float) 0, (float) 1));
+	float F6_c = cemav->rescale_flaps(constrain_value(-cf_L, (float) 0, (float) 1));
 	float F7_c = F6_c;
 		
     if (counter >= cemav->get_control_counter()) {

@@ -1314,7 +1314,7 @@ private:
 
 };
 
-class ModeCoanda : public Mode {
+class ModePQFeedback : public Mode {
 public:
     // inherit constructor
     using Copter::Mode::Mode;
@@ -1330,15 +1330,40 @@ public:
 
 protected:
 
-    const char *name() const override { return "COANDA"; }
-    const char *name4() const override { return "COAN"; }
+    const char *name() const override { return "PQFEED"; }
+    const char *name4() const override { return "PQFE"; }
 
 private:
 //    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
     int counter = 1;
 
+};
+
+class ModePQPID : public Mode {
+public:
+    // inherit constructor
+    using Copter::Mode::Mode;
+
+    virtual bool init(bool ignore_checks) override; // called when switching into this new mode
+    virtual void run() override; // called at 400 Hz
+
+    bool requires_GPS() const override { return false; }
+    bool has_manual_throttle() const override { return true; }
+    bool allows_arming(bool from_gcs) const override { return true; };
+    bool is_autopilot() const override { return false; }
+
+
+protected:
+
+    const char *name() const override { return "PQPID"; }
+    const char *name4() const override { return "PQPI"; }
+
+private:
+//    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
+    int counter = 1;
 
 };
+
 class ModeCoandaAtt : public Mode {
 public:
     // inherit constructor

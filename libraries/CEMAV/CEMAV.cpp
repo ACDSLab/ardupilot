@@ -207,6 +207,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _ahrs(ahrs),
     _pid_rate_yaw(10, 1, 0, 0.5, 5, dt),
+    _pid_rate_lat(10, 1, 0, 0.5, 5, dt),
+    _pid_rate_long(10, 1, 0, 0.5, 5, dt),
+
     _pid_rpm(10, 0, 0, 0.5, 5, dt),
     _pid_pitch(1,1,0,0.5,5,dt),
     _pid_roll(1,1,0,0.5,5,dt)
@@ -254,16 +257,7 @@ float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
 /* Define functions to compute the PWM values for the inner control loop for
  * body rates.
  */
-float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
-    // Get the current yaw rate
-    float curr_yaw_rate = _ahrs.get_gyro()[2];
 
-    // Get the desired yaw rate
-    float error = des_yaw_rate - curr_yaw_rate; // diff in rad/sec
-    _pid_rate_yaw.set_input_filter_d(error); // Filter the error signal
-
-    return (_pid_rate_yaw.get_pid()) - _yaw_trim_angle; // Compute then scale the output control
-}
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
     float error = (des_rpm - curr_rpm);
@@ -309,11 +303,52 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
     return _rudder.rudder_angle_to_pwm(angle);
 }
 
-void CEMAV::compute_control_pq(float des_p, float des_q, float (&flap_angles)[8]) {
-  float cur_p = _ahrs.get_gyro()[0];
-  float cur_q = _ahrs.get_gyro()[1];
-  _lqr.compute_control_pq(cur_p, cur_q, des_p, des_q, flap_angles);
+void CEMAV::pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8]) {
+    float cur_p = _ahrs.get_gyro()[0];
+    float cur_q = _ahrs.get_gyro()[1];
+    _lqr.compute_flaps_pq(cur_p, cur_q, des_p, des_q, flap_angles);
 }
+
+void CEMAV::pq_feedback_commands(float des_p, float des_q, float (&commands)[2]) {
+    float cur_p = _ahrs.get_gyro()[0];
+    float cur_q = _ahrs.get_gyro()[1];
+    _lqr.compute_commands_pq(cur_p, cur_q, des_p, des_q, commands);
+}
+
+float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
+    // Get the current yaw rate
+    float curr_yaw_rate = _ahrs.get_gyro()[2];
+
+    // Get the desired yaw rate
+    float error = des_yaw_rate - curr_yaw_rate; // diff in rad/sec
+    _pid_rate_yaw.set_input_filter_d(error); // Filter the error signal
+
+    return (_pid_rate_yaw.get_pid()) - _yaw_trim_angle; // Compute then scale the output control
+}
+
+float CEMAV::compute_lat_rate_control(float des_lat_rate) {
+    // Get the current lateral rate
+    float curr_lat_rate = _ahrs.get_gyro()[0];
+
+    // Get the desired lateral rate
+    float error = des_lat_rate - curr_lat_rate; // diff in rad/sec
+    _pid_rate_lat.set_input_filter_d(error); // Filter the error signal
+
+    return (_pid_rate_lat.get_pid()); // Compute then scale the output control
+}
+
+
+float CEMAV::compute_long_rate_control(float des_long_rate) {
+    // Get the current longitudinal rate
+    float curr_long_rate = _ahrs.get_gyro()[1];
+
+    // Get the desired longitudinal rate
+    float error = des_long_rate - curr_long_rate; // diff in rad/sec
+    _pid_rate_long.set_input_filter_d(error); // Filter the error signal
+
+    return (_pid_rate_long.get_pid()); // Compute then scale the output control
+}
+
 
 void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[8]) {
     // Compute the error in both pitch and roll
@@ -327,9 +362,13 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
     float u_roll_rate = _pid_roll.get_pid();  // rad/sec
 
     // Compute controll from the desired rates
-    compute_control_pq(u_roll_rate, u_pitch_rate, flap_angles);
+    pq_feedback_flaps(u_roll_rate, u_pitch_rate, flap_angles);
 }
 
 void CEMAV::compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M) {
     _cf.compute_crossfeed_moments(lat_c, lon_c, cf_L, cf_M);
+}
+
+float CEMAV::rescale_flaps(float input_command) {
+    return (_max_flap_angle - _min_flap_angle) * input_command + _min_flap_angle;
 }
