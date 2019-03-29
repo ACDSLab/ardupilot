@@ -202,6 +202,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 		AP_SUBGROUPINFO(_pid_rate_lat, "RAT_LAT_", 28, CEMAV, AC_PID),
 
 		AP_SUBGROUPINFO(_pid_rate_long, "RAT_LONG_", 29, CEMAV, AC_PID),
+		
+		AP_SUBGROUPINFO(_pid_yaw, "YAW_", 30, CEMAV, AC_PID),
+
 
 		
         AP_GROUPEND
@@ -211,13 +214,14 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 // CEMAV Constructor
 CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _ahrs(ahrs),
-    _pid_rate_yaw(10, 1, 0, 0.5, 5, dt),
-    _pid_rate_lat(10, 1, 0, 0.5, 5, dt),
-    _pid_rate_long(10, 1, 0, 0.5, 5, dt),
+    _pid_rate_yaw(1, 1, 0, 0.5, 5, dt),
+    _pid_rate_lat(1, 1, 0, 0.5, 5, dt),
+    _pid_rate_long(1, 1, 0, 0.5, 5, dt),
 
     _pid_rpm(10, 0, 0, 0.5, 5, dt),
     _pid_pitch(1,1,0,0.5,5,dt),
-    _pid_roll(1,1,0,0.5,5,dt)
+    _pid_roll(1,1,0,0.5,5,dt),
+	_pid_yaw(1,1,0,0.1,5,dt),
 {
     AP_Param::setup_object_defaults(this, var_info);
 
@@ -355,19 +359,17 @@ float CEMAV::compute_long_rate_control(float des_long_rate) {
 }
 
 
-void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[8]) {
+void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
     // Compute the error in both pitch and roll
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
 
-    // Set and then compute the pid terms
+    // Set and then compute the pid terms, the derivative portion gives us proportional rate control.
     _pid_pitch.set_input_filter_all(err_pitch);
     _pid_roll.set_input_filter_all(err_roll);
-    float u_pitch_rate = _pid_pitch.get_pid(); // rad/sec
-    float u_roll_rate = _pid_roll.get_pid();  // rad/sec
+    commands[0] = _pid_pitch.get_pid(); // L_c
+    commands[1] = _pid_roll.get_pid();  // M_c
 
-    // Compute controll from the desired rates
-    pq_feedback_flaps(u_roll_rate, u_pitch_rate, flap_angles);
 }
 
 void CEMAV::compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M) {

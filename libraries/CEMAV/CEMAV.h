@@ -52,7 +52,7 @@ public:
     void compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M);
 
     // Attitude hold
-    void compute_control_pitch_roll(float des_pitch, float des_roll, float (&flap_angles)[8]);
+    void compute_control_pitch_roll(float des_pitch, float des_roll, float (&command)[2]);
 
 
     // pid accessors
@@ -114,6 +114,7 @@ private:
     AC_PID   _pid_rpm;
     AC_PID   _pid_pitch;
     AC_PID   _pid_roll;
+	AC_PID	 _pid_yaw;
 
     // Servo Calibration for 8 flaps and 1 rudder
     Flap _flap1;
