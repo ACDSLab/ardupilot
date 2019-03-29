@@ -221,7 +221,7 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rpm(10, 0, 0, 0.5, 5, dt),
     _pid_pitch(1,1,0,0.5,5,dt),
     _pid_roll(1,1,0,0.5,5,dt),
-	_pid_yaw(1,1,0,0.1,5,dt),
+	_pid_yaw(1,1,0,0.1,5,dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
 

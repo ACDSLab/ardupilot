@@ -56,7 +56,7 @@ void Copter::ModeCoandaAtt::run()
 	
 	// Declare the initial commands [L_c, M_c], and get them from PID
 	float commands[2];
-	cemav->compute_control_pitch_roll(des_pitch, des_roll, commands)
+	cemav->compute_control_pitch_roll(des_pitch, des_roll, commands);
 	
 	// Declare the crossfed moment commands
     float cf_L;
