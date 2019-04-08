@@ -1364,7 +1364,7 @@ private:
 
 };
 
-class ModeCoandaAtt : public Mode {
+class ModeAttNIL : public Mode {
 public:
     // inherit constructor
     using Copter::Mode::Mode;
@@ -1380,8 +1380,36 @@ public:
 
 protected:
 
-    const char *name() const override { return "COANDA_ATT"; }
-    const char *name4() const override { return "CATT"; }
+    const char *name() const override { return "ATT_NIL"; }
+    const char *name4() const override { return "ATNI"; }
+
+private:
+//    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list
+    uint32_t prev_loop_now = AP_HAL::micros();
+    uint32_t curr_loop_now = AP_HAL::micros();
+
+    int counter = 1;
+
+};
+
+class ModeAttIL : public Mode {
+public:
+    // inherit constructor
+    using Copter::Mode::Mode;
+
+    virtual bool init(bool ignore_checks) override; // called when switching into this new mode
+    virtual void run() override; // called at 400 Hz
+
+    bool requires_GPS() const override { return false; }
+    bool has_manual_throttle() const override { return true; }
+    bool allows_arming(bool from_gcs) const override { return true; };
+    bool is_autopilot() const override { return false; }
+
+
+protected:
+
+    const char *name() const override { return "ATT_IL"; }
+    const char *name4() const override { return "ATIL"; }
 
 private:
 //    static int scale_input_to_pwm(double input , int input_range, int center_input ); // These values actually come from the parameter list

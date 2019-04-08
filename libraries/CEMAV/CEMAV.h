@@ -52,8 +52,9 @@ public:
     void compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M);
 
     // Attitude hold
-    void compute_control_pitch_roll(float des_pitch, float des_roll, float (&command)[2]);
-    void compute_PID_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]);
+    // There are 2 potential forms of attitude controllers : inner loop and non-inner loop
+    void compute_NIL_pitch_roll(float des_pitch, float des_roll, float (&command)[2]); // Non Inner Loop
+    void compute_IL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2], int type); // Inner Loop
 
 
     // pid accessors
@@ -113,8 +114,10 @@ private:
     AC_PID   _pid_rate_long;
 
     AC_PID   _pid_rpm;
-    AC_PID   _pid_pitch;
-    AC_PID   _pid_roll;
+    AC_PID   _pid_nil_pitch;
+    AC_PID   _pid_nil_roll;
+    AC_PID   _pid_il_pitch;
+    AC_PID   _pid_il_roll;
 	AC_PID	 _pid_yaw;
 
     // Servo Calibration for 8 flaps and 1 rudder

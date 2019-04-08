@@ -4,12 +4,12 @@
 #include "Copter.h"
 
 /*
- * Init and run calls for mode coanda flight mode
+ * Init and run calls for mode attitude hold IL (Inner Loop) flight mode
  */
 
 
 // stabilize_init - initialise stabilize controller
-bool Copter::ModeCoandaAtt::init(bool ignore_checks)
+bool Copter::ModeAttIL::init(bool ignore_checks)
 {
     // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
     //if (motors->armed() && ap.land_complete && !copter.flightmode->has_manual_throttle() &&
@@ -25,7 +25,7 @@ bool Copter::ModeCoandaAtt::init(bool ignore_checks)
 
 // stabilize_run - runs the main stabilize controller
 // should be called at 100hz or more
-void Copter::ModeCoandaAtt::run()
+void Copter::ModeAttIL::run()
 {
 
     // clear landing flag
@@ -56,7 +56,7 @@ void Copter::ModeCoandaAtt::run()
 	
 	// Declare the initial commands [L_c, M_c], and get them from PID
 	float commands[2];
-	cemav->compute_control_pitch_roll(des_pitch, des_roll, commands);
+	cemav->compute_NIL_pitch_roll(des_pitch, des_roll, commands);
 	
 	// Declare the crossfed moment commands
     float cf_L;

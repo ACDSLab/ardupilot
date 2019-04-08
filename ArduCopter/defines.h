@@ -53,11 +53,12 @@ enum control_mode_t {
     SMART_RTL =    21,  // SMART_RTL returns to home by retracing its steps
     FLOWHOLD  =    22,  // FLOWHOLD holds position with optical flow without rangefinder
     FOLLOW    =    23,  // follow attempts to follow another vehicle or ground station
-    MANUAL    =    24,  // Pass through RC input to PWM, no stabilization
-    MAN_CF =       25,  // Manual passthrough with crossfeeding
-    PQFEED  =      26, // Airframe stabilized to zero pitch and yaw rate through LQR control + crossfeed
-    PQPID  =       27, // Airframe stabilized to zero pitch and yaw rate through PID control + crossfeed
-    C_ATT   =      28,
+    MANUAL       = 24,  // Pass through RC input to PWM, no stabilization
+    MAN_CF       = 25,  // Manual passthrough with crossfeeding
+    PQFEED       = 26, // Airframe stabilized to zero pitch and roll rate through LQR control + crossfeed
+    PQPID        = 27, // Airframe stabilized to zero pitch and roll rate through PID control + crossfeed
+    ATT_NIL      = 28, // Airframe stabilized to zero pitch and roll through only attitude error feedback
+    ATT_IL       = 29, // Airframe stabilized to zero pitch and roll through an outerloop PID and an inner loop rate control
 };
 
 enum mode_reason_t {

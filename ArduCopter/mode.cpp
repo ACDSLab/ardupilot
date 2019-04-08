@@ -173,8 +173,12 @@ Copter::Mode *Copter::mode_from_mode_num(const uint8_t mode)
             ret = &mode_pq_pid;
             break;
 
-        case C_ATT:
-            ret = &mode_coanda_attitude;
+        case ATT_NIL:
+            ret = &mode_attitude_nil;
+            break;
+
+        case ATT_IL:
+            ret = &mode_attitude_il;
             break;
 
 

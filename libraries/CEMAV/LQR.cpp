@@ -93,22 +93,22 @@ const AP_Param::GroupInfo LQR::var_info[] = {
         // @Param: LQ_M_11
         // @DisplayName:
         // @Description:
-        AP_GROUPINFO("LQ_M_11", 17, LQR, _lq_moment_11, -3.4472),
+        AP_GROUPINFO("LQ_TWO_11", 17, LQR, _lq_twostate_11, -3.4472),
 
         // @Param: LQ_M_12
         // @DisplayName:
         // @Description:
-        AP_GROUPINFO("LQ_M_12", 18, LQR, _lq_moment_12, -1.4279),
+        AP_GROUPINFO("LQ_TWO_12", 18, LQR, _lq_twostate_12, -1.4279),
 
         // @Param: LQ_M_21
         // @DisplayName:
         // @Description:
-        AP_GROUPINFO("LQ_M_21", 19, LQR, _lq_moment_21, -1.4279),
+        AP_GROUPINFO("LQ_TWO_21", 19, LQR, _lq_twostate_21, -1.4279),
 
         // @Param: LQ_M_22
         // @DisplayName:
         // @Description:
-        AP_GROUPINFO("LQ_M_22", 20, LQR, _lq_moment_22, -3.4472),
+        AP_GROUPINFO("LQ_TWO_22", 20, LQR, _lq_twostate_22, -3.4472),
 
 		
         AP_GROUPEND
@@ -127,10 +127,14 @@ void LQR::compute_flaps_pq(float cur_p, float cur_q, float des_p, float des_q, f
     flap_angles[7] = (_lq_81*err_p + _lq_82*err_q) + _flap_trim_angle;
 }
 
-void LQR::compute_commands_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2]) {
+void LQR::compute_twostate_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2]) {
     float err_p = des_p - cur_p; // Difference is in rad/sec
     float err_q = des_q - cur_q; // Difference is in rad/sec
 
-    commands[0] = (_lq_moment_11*err_p + _lq_moment_12*err_q);
-    commands[1] = (_lq_moment_21*err_p + _lq_moment_22*err_q);
+    commands[0] = (_lq_twostate_11*err_p + _lq_twostate_12*err_q);
+    commands[1] = (_lq_twostate_21*err_p + _lq_twostate_22*err_q);
 }
+
+void LQR::compute_fourstate_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2])
+
+void LQR::compute_integral_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2])
