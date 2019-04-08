@@ -79,7 +79,6 @@ public:
     // Function to scale commands (0 to 1) to flap angles
     float rescale_flaps(float input_command);
 
-
     static const struct AP_Param::GroupInfo var_info[];  // Contains the information for parameters
 
 private:
@@ -139,6 +138,9 @@ private:
     // Minimum and maximum flap angle
     AP_Float _max_flap_angle;
     AP_Float _min_flap_angle;
+
+    // Type for inner loop
+    AP_Int16 _inner_loop_type; // 0: PID 1: LQR
 
 
 

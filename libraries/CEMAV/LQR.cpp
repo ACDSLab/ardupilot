@@ -140,6 +140,7 @@ void LQR::compute_twostate_pq(float cur_p, float cur_q, float des_p, float des_q
 //void LQR::compute_fourstate_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2]){
 //
 //}
+
 //
 //void LQR::compute_integral_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2]) {
 //
