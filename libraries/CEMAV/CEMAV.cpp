@@ -168,7 +168,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("ATT_MAX_PIT", 18, CEMAV, _max_pitch_angle, 45.0f),
+        AP_GROUPINFO("AT_MAX_PIT", 18, CEMAV, _max_pitch_angle, 45.0f),
 
         // @Param: MAX_ROL
         // @DisplayName: Maximum roll angle in deg
@@ -176,7 +176,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("ATT_MAX_ROL", 19, CEMAV, _max_roll_angle, 45.0f),
+        AP_GROUPINFO("AT_MAX_ROL", 19, CEMAV, _max_roll_angle, 45.0f),
 
         // @Param: MAX_D_YAW
         // @DisplayName: Maximum change in yaw angle in delta deg
@@ -186,11 +186,12 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Advanced
         AP_GROUPINFO("MAX_D_YAW", 20, CEMAV, _max_delta_yaw_angle, 720.0f),
 
-        AP_SUBGROUPINFO(_pid_nil_pitch, "ATT_NIL_PIT_", 21, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_nil_pitch, "AT_NI_PI_", 21, CEMAV, AC_PID),
 
-        AP_SUBGROUPINFO(_pid_nil_roll, "ATT_NIL_ROL_", 22, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_nil_roll, "AT_NI_RO_", 22, CEMAV, AC_PID),
 
         AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 4),
+
         AP_GROUPINFO("YAW_TRIM", 24, CEMAV, _yaw_trim_angle, 0.0f),
 
         AP_GROUPINFO("MAX_FLAP_ANG", 25, CEMAV, _max_flap_angle, 90.0f),
@@ -203,11 +204,11 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
 		AP_SUBGROUPINFO(_pid_rate_long, "RAT_LONG_", 29, CEMAV, AC_PID),
 		
-		AP_SUBGROUPINFO(_pid_yaw, "ATT_YAW_", 30, CEMAV, AC_PID),
+		AP_SUBGROUPINFO(_pid_yaw, "AT_YAW_", 30, CEMAV, AC_PID),
 
-        AP_SUBGROUPINFO(_pid_il_pitch, "ATT_IL_PIT_", 31, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_il_pitch, "AT_IL_PI_", 31, CEMAV, AC_PID),
 
-        AP_SUBGROUPINFO(_pid_il_roll, "ATT_IL_ROL_", 32, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_il_roll, "AT_IL_RO_", 32, CEMAV, AC_PID),
 
         AP_GROUPEND
 
@@ -390,7 +391,6 @@ void CEMAV::compute_IL_pitch_roll(float des_pitch, float des_roll, float (&comma
 
     _pid_rate_lat.set_input_filter_all(err_lat_rate);
     _pid_rate_long.set_input_filter_all(err_long_rate);
-
 
     commands[0] = _pid_rate_lat.get_pid(); // L_c
     commands[1] = _pid_rate_long.get_pid();  // M_c

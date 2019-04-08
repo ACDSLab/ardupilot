@@ -1,0 +1,4 @@
+AT_IL_PI_ : PID Controller on pitch for attitude controller using inner loop controller for rates
+AT_IL_RO_ : PID Controller on roll for attitude controller using inner loop controller for rates
+AT_YAW_: PID Controller on yaw
+
