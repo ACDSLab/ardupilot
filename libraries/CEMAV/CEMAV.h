@@ -53,6 +53,7 @@ public:
 
     // Attitude hold
     void compute_control_pitch_roll(float des_pitch, float des_roll, float (&command)[2]);
+    void compute_PID_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]);
 
 
     // pid accessors

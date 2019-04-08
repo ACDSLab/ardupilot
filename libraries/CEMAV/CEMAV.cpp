@@ -197,7 +197,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_GROUPINFO("MIN_FLAP_ANG", 26, CEMAV, _min_flap_angle, 30.0f),
 
-        AP_SUBGROUPINFO(_cf, "LM_CF_", 27, CEMAV, CrossFeed),
+        AP_SUBGROUPINFO(_cf, "LM_", 27, CEMAV, CrossFeed),
 		
 		AP_SUBGROUPINFO(_pid_rate_lat, "RAT_LAT_", 28, CEMAV, AC_PID),
 
@@ -370,6 +370,26 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
     commands[0] = _pid_roll.get_pid(); // L_c
     commands[1] = _pid_pitch.get_pid();  // M_c
 
+}
+
+void CEMAV::compute_PID_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
+    float err_pitch = des_pitch - _ahrs.pitch;
+    float err_roll = des_roll - _ahrs.roll;
+
+    // Set and then compute the att PID terms, the output is desired rates in p and q
+    _pid_pitch.set_input_filter_all(err_pitch);
+    _pid_roll.set_input_filter_all(err_roll);
+
+    // Set and then compute the angular velocity PID terms, the output is L_c, and M_c
+    float err_lat_rate = _pid_roll.get_pid() - _ahrs.get_gyro()[0];
+    float err_long_rate = _pid_pitch.get_pid() - _ahrs.get_gyro()[1];
+
+    _pid_rate_lat.set_input_filter_all(err_lat_rate);
+    _pid_rate_long.set_input_filter_all(err_long_rate);
+
+
+    commands[0] = _pid_rate_lat.get_pid(); // L_c
+    commands[1] = _pid_rate_long.get_pid();  // M_c
 }
 
 void CEMAV::compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M) {
