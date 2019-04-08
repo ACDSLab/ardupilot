@@ -54,14 +54,8 @@ public:
     // Attitude hold
     // There are 2 potential forms of attitude controllers : inner loop and non-inner loop
     void compute_NIL_pitch_roll(float des_pitch, float des_roll, float (&command)[2]); // Non Inner Loop
-    void compute_IL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2], int type); // Inner Loop
+    void compute_IL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]); // Inner Loop
 
-
-    // pid accessors
-    AC_PID& get_roll_pid() { return _pid_roll; }
-    AC_PID& get_pitch_pid() { return _pid_pitch; }
-    AC_PID& get_rate_yaw_pid() { return _pid_rate_yaw; }
-    AC_PID& get_rpm_pid() {return _pid_rpm; }
 
     // servo cal accessors
     Flap& get_flap1(){ return _flap1;}

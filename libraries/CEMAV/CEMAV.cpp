@@ -186,9 +186,9 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Advanced
         AP_GROUPINFO("MAX_D_YAW", 20, CEMAV, _max_delta_yaw_angle, 720.0f),
 
-        AP_SUBGROUPINFO(_pid_pitch, "ATT_PIT_", 21, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_nil_pitch, "ATT_NIL_PIT_", 21, CEMAV, AC_PID),
 
-        AP_SUBGROUPINFO(_pid_roll, "ATT_ROL_", 22, CEMAV, AC_PID),
+        AP_SUBGROUPINFO(_pid_nil_roll, "ATT_NIL_ROL_", 22, CEMAV, AC_PID),
 
         AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 4),
         AP_GROUPINFO("YAW_TRIM", 24, CEMAV, _yaw_trim_angle, 0.0f),
@@ -205,8 +205,10 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 		
 		AP_SUBGROUPINFO(_pid_yaw, "ATT_YAW_", 30, CEMAV, AC_PID),
 
+        AP_SUBGROUPINFO(_pid_il_pitch, "ATT_IL_PIT_", 31, CEMAV, AC_PID),
 
-		
+        AP_SUBGROUPINFO(_pid_il_roll, "ATT_IL_ROL_", 32, CEMAV, AC_PID),
+
         AP_GROUPEND
 
 };
@@ -219,8 +221,10 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rate_long(1, 1, 0, 0.5, 5, dt),
 
     _pid_rpm(10, 0, 0, 0.5, 5, dt),
-    _pid_pitch(1,1,0,0.5,5,dt),
-    _pid_roll(1,1,0,0.5,5,dt),
+    _pid_nil_pitch(1,1,0,0.5,5,dt),
+    _pid_nil_roll(1,1,0,0.5,5,dt),
+    _pid_il_pitch(1,1,0,0.5,5,dt),
+    _pid_il_roll(1,1,0,0.5,5,dt),
 	_pid_yaw(1,1,0,0.1,5,dt)
 {
     AP_Param::setup_object_defaults(this, var_info);
@@ -321,7 +325,7 @@ void CEMAV::pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8])
 void CEMAV::pq_feedback_commands(float des_p, float des_q, float (&commands)[2]) {
     float cur_p = _ahrs.get_gyro()[0];
     float cur_q = _ahrs.get_gyro()[1];
-    _lqr.compute_commands_pq(cur_p, cur_q, des_p, des_q, commands);
+    _lqr.compute_twostate_pq(cur_p, cur_q, des_p, des_q, commands);
 }
 
 float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
@@ -365,10 +369,10 @@ void CEMAV::compute_NIL_pitch_roll(float des_pitch, float des_roll, float (&comm
     float err_roll = des_roll - _ahrs.roll;
 
     // Set and then compute the pid terms, the derivative portion gives us proportional rate control.
-    _pid_pitch.set_input_filter_all(err_pitch);
-    _pid_roll.set_input_filter_all(err_roll);
-    commands[0] = _pid_roll.get_pid(); // L_c
-    commands[1] = _pid_pitch.get_pid();  // M_c
+    _pid_nil_pitch.set_input_filter_all(err_pitch);
+    _pid_nil_roll.set_input_filter_all(err_roll);
+    commands[0] = _pid_nil_roll.get_pid(); // L_c
+    commands[1] = _pid_nil_pitch.get_pid();  // M_c
 
 }
 
@@ -377,12 +381,12 @@ void CEMAV::compute_IL_pitch_roll(float des_pitch, float des_roll, float (&comma
     float err_roll = des_roll - _ahrs.roll;
 
     // Set and then compute the att PID terms, the output is desired rates in p and q
-    _pid_pitch.set_input_filter_all(err_pitch);
-    _pid_roll.set_input_filter_all(err_roll);
+    _pid_il_pitch.set_input_filter_all(err_pitch);
+    _pid_il_roll.set_input_filter_all(err_roll);
 
     // Set and then compute the angular velocity PID terms, the output is L_c, and M_c
-    float err_lat_rate = _pid_roll.get_pid() - _ahrs.get_gyro()[0];
-    float err_long_rate = _pid_pitch.get_pid() - _ahrs.get_gyro()[1];
+    float err_lat_rate = _pid_il_roll.get_pid() - _ahrs.get_gyro()[0];
+    float err_long_rate = _pid_il_pitch.get_pid() - _ahrs.get_gyro()[1];
 
     _pid_rate_lat.set_input_filter_all(err_lat_rate);
     _pid_rate_long.set_input_filter_all(err_long_rate);
