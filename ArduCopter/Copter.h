@@ -999,7 +999,10 @@ private:
     ModePQFeedback mode_pqfeedback;
     ModePQPID mode_pq_pid;
 
-    ModeCoandaAtt mode_coanda_attitude;
+    ModeAttNIL mode_attitude_nil;
+
+    ModeAttIL mode_attitude_il;
+
 
     // mode.cpp
     Mode *mode_from_mode_num(const uint8_t mode);

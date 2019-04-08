@@ -359,7 +359,7 @@ float CEMAV::compute_long_rate_control(float des_long_rate) {
 }
 
 
-void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
+void CEMAV::compute_NIL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
     // Compute the error in both pitch and roll
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
@@ -372,7 +372,7 @@ void CEMAV::compute_control_pitch_roll(float des_pitch, float des_roll, float (&
 
 }
 
-void CEMAV::compute_PID_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
+void CEMAV::compute_IL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
 
