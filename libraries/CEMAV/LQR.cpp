@@ -128,9 +128,9 @@ void LQR::compute_flaps_pq(float cur_p, float cur_q, float des_p, float des_q, f
 }
 
 void LQR::compute_commands_pq(float cur_p, float cur_q, float des_p, float des_q, float (&commands)[2]) {
-    float err_p = des_p - cur_p; // Difference is in rad/sec
-    float err_q = des_q - cur_q; // Difference is in rad/sec
+//    float err_p = des_p - cur_p; // Difference is in rad/sec
+//    float err_q = des_q - cur_q; // Difference is in rad/sec
 
-    commands[0] = (_lq_moment_11*err_p + _lq_moment_12*err_q);
-    commands[1] = (_lq_moment_21*err_p + _lq_moment_22*err_q);
+    commands[0] = (_lq_moment_11*cur_p + _lq_moment_12*cur_q) + des_p;
+    commands[1] = (_lq_moment_21*cur_p + _lq_moment_22*cur_q) + des_q;
 }
