@@ -79,24 +79,20 @@ void Copter::ModePQFeedback::run()
 	// SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap3, cemav->flap_angle_to_pwm(-1*roll_flap_input, 3));
 	// SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap4, cemav->flap_angle_to_pwm(-1*pitch_flap_input, 4));
 
-	/********************************
-	* Roll and Pitch PQ Feedback
-	*********************************/
-	// Get the pilot input from pitch channel
+	/******************************************
+	* Lateral and Longitudinal Rate Controller
+	*******************************************/
+	// Get the pilot input from pitch channel and roll channel, interpret to desired rates
 	float q_stick_norm = -1 * channel_pitch->norm_input_dz();  // -1 to 1 The stick is reversed!
 	float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1
-	float des_q = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
-	float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
-	//
+	float des_long_rate = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
+	float des_lat_rate = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
 
-	/* If we wanted to compute the flap angle values directly (crossfeed in its current form doesn't work for this case)
-	float flap_angles[8];
-	cemav->pq_feedback_flaps(des_p, des_q, flap_angles);
-    */
+    float cur_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
 	// Compute the longitudinal and lateral commands using pq feedback
 	float commands[2];
-	cemav->pq_feedback_commands(des_p, des_q, commands);
+	cemav->compute_pq_rate_commands(des_lat_rate, des_long_rate, cur_rpm, commands, 0); // rate_ctrl is 0, since we are using the rate controller
 
     // Declare the crossfed moment commands
     float cf_L;

@@ -44,16 +44,16 @@ void Copter::ModePQPID::run()
 	/********************************
 	* Roll and Pitch PQ PID
 	*********************************/
-	// Get the pilot input from pitch channel
-	float q_stick_norm = -1 * channel_pitch->norm_input_dz();  // -1 to 1 The stick is reversed!
-	float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1
-	float des_q = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
-	float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
-	//
+//	// Get the pilot input from pitch channel
+//	float q_stick_norm = -1 * channel_pitch->norm_input_dz();  // -1 to 1 The stick is reversed!
+//	float p_stick_norm = channel_roll->norm_input_dz();  // -1 to 1
+//	float des_q = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
+//	float des_p = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
+//	//
 
     // Compute the longitudinal and lateral commands using pq PID
-    float des_L = cemav->compute_lat_rate_control(des_p);
-    float des_M = cemav->compute_long_rate_control(des_q);
+    float des_L = 0;
+    float des_M = 0;
 
     // Declare the crossfed moment commands
     float cf_L;

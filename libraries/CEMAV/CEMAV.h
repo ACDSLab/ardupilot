@@ -15,6 +15,7 @@
 #include <CEMAV/Servo_Cal.h>
 #include <CEMAV/LQR.h>
 #include <CEMAV/CrossFeed.h>
+#include <CEMAV/Dynamic_Inversion.h>
 
 #ifndef CEMAV_H_
 #define CEMAV_H_
@@ -37,31 +38,30 @@ public:
 
 	// Algorithms to compute control inputs required for desired rate
 	float compute_yaw_rate_control(float des_yaw_rate);
-    float compute_lat_rate_control(float des_lat_rate);
-    float compute_long_rate_control(float des_long_rate);
-
 
     float compute_rpm_control(float des_rpm, float curr_rpm);
 
     // PQFeedback
     void pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8]);  // Compute pq feedback and get the flaps angles
-    void pq_feedback_commands(float des_p, float des_q, float (&commands)[2]);  // Compute pq feedback and get commands
 
 
     // Cross Feed Algorithm
     void compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M);
 
-    // Attitude hold
-    // There are 2 potential forms of attitude controllers : inner loop and non-inner loop
-    void compute_NIL_pitch_roll(float des_pitch, float des_roll, float (&command)[2]); // Non Inner Loop
-    void compute_IL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]); // Inner Loop
+    // Rate control
+    // There are 3 potential forms of rate control: 1: PID, 2: Poleplacement / statefeedback/ LQR, 3: NDI
+    void compute_pq_rate_commands(float des_lat_rate, float des_long_rate, float cur_rpm, float (&commands)[2],
+            int rate_ctrl);
 
 
-    // servo cal accessors
-    Flap& get_flap1(){ return _flap1;}
-    Flap& get_flap2(){ return _flap2;}
-    Flap& get_flap3(){ return _flap3;}
-    Flap& get_flap4(){ return _flap4;}
+    // Attitude control
+    // There are 2 potential forms of attitude controllers : inner loop and non-inner loop depends on parameter
+    // _att_controller_type: 0: PID on att,
+    //                       1: PID on att and rate,
+    //                       2: PID on att, statefeedback on rate,
+    //                       3: PID on att, NDI on rate
+    void compute_pitch_roll_commands(float des_pitch, float des_roll, float cur_rpm, float (&commands)[2]);
+
 
     Rudder& get_rudder(){return _rudder;}
 
@@ -95,7 +95,6 @@ private:
     // Attitude Parameters
     AP_Float _max_pitch_angle;
     AP_Float _max_roll_angle;
-    AP_Float _max_delta_yaw_angle;
 
     // RPM Parameters
     AP_Float _max_rpm; // Maximum angular speed of the motor in revolutions per minute
@@ -113,6 +112,9 @@ private:
     AC_PID   _pid_il_roll;
 	AC_PID	 _pid_yaw;
 
+	AC_PID   _pid_di_lat; // PID controller for the dynamic inversion
+    AC_PID   _pid_di_long; // PID controller for the dynamic inversion
+
     // Servo Calibration for 8 flaps and 1 rudder
     Flap _flap1;
     Flap _flap2;
@@ -129,18 +131,20 @@ private:
 
     CrossFeed _cf;
 
+    Dynamic_Inversion _di;
+
     // Counter to delay controller calculation
     AP_Int16 _count_max;
-
-    // Trim Angle for Yaw
-    AP_Float _yaw_trim_angle;
 
     // Minimum and maximum flap angle
     AP_Float _max_flap_angle;
     AP_Float _min_flap_angle;
 
     // Type for inner loop
-    AP_Int16 _inner_loop_type; // 0: PID 1: LQR
+    AP_Int16 _att_controller_type; // 0: PID on att, 1: rate controller active
+
+    // Type for rate controller
+    AP_Int16 _rate_controller_type; // 0: PID on rate, 1: statefeedback on rate, 2: NDI on rate
 
 
 

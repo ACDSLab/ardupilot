@@ -49,15 +49,16 @@ void Copter::ModeAttNIL::run()
 	* Roll and Pitch ANGLE controller
 	***************************/
 
-	float pitch_stick_norm = -1*channel_pitch->norm_input_dz();  // -1 to 1
-	float roll_stick_norm =  channel_roll->norm_input_dz();  // -1 to 1
-	float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); // rad
-	float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
+//	float pitch_stick_norm = -1*channel_pitch->norm_input_dz();  // -1 to 1
+//	float roll_stick_norm =  channel_roll->norm_input_dz();  // -1 to 1
+//	float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); // rad
+//	float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
 	
 	// Declare the initial commands [L_c, M_c], and get them from PID
 	float commands[2];
-	cemav->compute_NIL_pitch_roll(des_pitch, des_roll, commands);
-	
+    commands[0] = 0;
+    commands[1] = 0;
+
 	// Declare the crossfed moment commands
     float cf_L;
     float cf_M;

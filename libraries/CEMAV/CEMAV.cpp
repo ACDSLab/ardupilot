@@ -16,7 +16,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @Range: 200 720
         // @Increment 1
         // @User: Advanced
-        AP_GROUPINFO("RAT_MAX_YAW", 0, CEMAV, _max_yaw_ds, 720.0f),
+        AP_GROUPINFO("RAT_MAX_R", 0, CEMAV, _max_yaw_ds, 720.0f),
 
         // @Param: MAX_RPM
         // @DisplayName: Maximum motor speed in rpm
@@ -160,7 +160,7 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Advanced
         AP_GROUPINFO("RAT_MAX_Q", 16, CEMAV, _max_q_ds, 720.0f),
 
-        AP_SUBGROUPINFO(_lqr, "PQ_", 17, CEMAV, LQR),
+        AP_SUBGROUPINFO(_lqr, "RAT_", 17, CEMAV, LQR),
 
         // @Param: MAX_PIT
         // @DisplayName: Maximum pitch angle in deg
@@ -178,21 +178,11 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
         // @User: Advanced
         AP_GROUPINFO("AT_MAX_ROL", 19, CEMAV, _max_roll_angle, 45.0f),
 
-        // @Param: MAX_D_YAW
-        // @DisplayName: Maximum change in yaw angle in delta deg
-        // @Description: Maximum roll angle in deg.
-        // @Range: 200 720
-        // @Increment 1
-        // @User: Advanced
-        AP_GROUPINFO("MAX_D_YAW", 20, CEMAV, _max_delta_yaw_angle, 720.0f),
-
         AP_SUBGROUPINFO(_pid_nil_pitch, "AT_NI_PI_", 21, CEMAV, AC_PID),
 
         AP_SUBGROUPINFO(_pid_nil_roll, "AT_NI_RO_", 22, CEMAV, AC_PID),
 
         AP_GROUPINFO("COUNTER", 23, CEMAV, _count_max, 4),
-
-        AP_GROUPINFO("YAW_TRIM", 24, CEMAV, _yaw_trim_angle, 0.0f),
 
         AP_GROUPINFO("MAX_FLAP_ANG", 25, CEMAV, _max_flap_angle, 90.0f),
 
@@ -210,7 +200,15 @@ const AP_Param::GroupInfo CEMAV::var_info[] = {
 
         AP_SUBGROUPINFO(_pid_il_roll, "AT_IL_RO_", 32, CEMAV, AC_PID),
 
-        AP_GROUPINFO("IN_LOOP_TYP", 33, CEMAV, _inner_loop_type, 0),
+        AP_GROUPINFO("AT_CTRL", 33, CEMAV, _att_controller_type, 0),
+
+        AP_GROUPINFO("RAT_CTRL", 34, CEMAV, _rate_controller_type, 1),
+
+        AP_SUBGROUPINFO(_pid_di_lat, "RAT_DI_P_", 35, CEMAV, AC_PID),
+
+        AP_SUBGROUPINFO(_pid_di_long, "RAT_DI_Q_", 36, CEMAV, AC_PID),
+
+        AP_SUBGROUPINFO(_di, "RAT_", 37, CEMAV, Dynamic_Inversion),
 
 
         AP_GROUPEND
@@ -223,7 +221,8 @@ CEMAV::CEMAV(AP_AHRS_View &ahrs, float dt) :
     _pid_rate_yaw(1, 1, 0, 0.5, 5, dt),
     _pid_rate_lat(1, 1, 0, 0.5, 5, dt),
     _pid_rate_long(1, 1, 0, 0.5, 5, dt),
-
+    _pid_di_lat(1, 1, 0, 0.5, 5, dt),
+    _pid_di_long(1, 1, 0, 0.5, 5, dt),
     _pid_rpm(10, 0, 0, 0.5, 5, dt),
     _pid_nil_pitch(1,1,0,0.5,5,dt),
     _pid_nil_roll(1,1,0,0.5,5,dt),
@@ -271,9 +270,7 @@ float CEMAV::get_pilot_des_rpm(uint8_t throttle_stick_percent) {
 
 }
 
-/* Define functions to compute the PWM values for the inner control loop for
- * body rates.
- */
+
 
 
 float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
@@ -282,6 +279,8 @@ float CEMAV::compute_rpm_control(float des_rpm, float curr_rpm) {
 
     return (_pid_rpm.get_pid()) / _rpm_control_scale; // Compute then scale the output control
 }
+
+// Define functions to compute the PWM values for given flap deflections.
 
 uint16_t CEMAV::flap_angle_to_pwm(float angle, int flap_number) {
 
@@ -320,18 +319,8 @@ uint16_t CEMAV::rudder_angle_to_pwm(float angle) {
     return _rudder.rudder_angle_to_pwm(angle);
 }
 
-void CEMAV::pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8]) {
-    float cur_p = _ahrs.get_gyro()[0];
-    float cur_q = _ahrs.get_gyro()[1];
-    _lqr.compute_flaps_pq(cur_p, cur_q, des_p, des_q, flap_angles);
-}
 
-void CEMAV::pq_feedback_commands(float des_p, float des_q, float (&commands)[2]) {
-    float cur_p = _ahrs.get_gyro()[0];
-    float cur_q = _ahrs.get_gyro()[1];
-    _lqr.compute_twostate_pq(cur_p, cur_q, des_p, des_q, commands);
-}
-
+// Yaw rate controller PID
 float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
     // Get the current yaw rate
     float curr_yaw_rate = _ahrs.get_gyro()[2];
@@ -340,83 +329,114 @@ float CEMAV::compute_yaw_rate_control(float des_yaw_rate) {
     float error = des_yaw_rate - curr_yaw_rate; // diff in rad/sec
     _pid_rate_yaw.set_input_filter_d(error); // Filter the error signal
 
-    return (_pid_rate_yaw.get_pid()) - _yaw_trim_angle; // Compute then scale the output control
-}
-
-float CEMAV::compute_lat_rate_control(float des_lat_rate) {
-    // Get the current lateral rate
-    float curr_lat_rate = _ahrs.get_gyro()[0];
-
-    // Get the desired lateral rate
-    float error = des_lat_rate - curr_lat_rate; // diff in rad/sec
-    _pid_rate_lat.set_input_filter_d(error); // Filter the error signal
-
-    return (_pid_rate_lat.get_pid()); // Compute then scale the output control
+    return (_pid_rate_yaw.get_pid()); // Compute then scale the output control
 }
 
 
-float CEMAV::compute_long_rate_control(float des_long_rate) {
-    // Get the current longitudinal rate
-    float curr_long_rate = _ahrs.get_gyro()[1];
 
-    // Get the desired longitudinal rate
-    float error = des_long_rate - curr_long_rate; // diff in rad/sec
-    _pid_rate_long.set_input_filter_d(error); // Filter the error signal
+// Define functions to compute commands for state feedback
 
-    return (_pid_rate_long.get_pid()); // Compute then scale the output control
+void CEMAV::pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8]) {
+    float cur_p = _ahrs.get_gyro()[0];
+    float cur_q = _ahrs.get_gyro()[1];
+    _lqr.compute_flaps_pq(cur_p, cur_q, des_p, des_q, flap_angles);
 }
 
+// Rate controller
 
-void CEMAV::compute_NIL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
-    // Compute the error in both pitch and roll
-    float err_pitch = des_pitch - _ahrs.pitch;
-    float err_roll = des_roll - _ahrs.roll;
-
-    // Set and then compute the pid terms, the derivative portion gives us proportional rate control.
-    _pid_nil_pitch.set_input_filter_all(err_pitch);
-    _pid_nil_roll.set_input_filter_all(err_roll);
-    commands[0] = _pid_nil_roll.get_pid(); // L_c
-    commands[1] = _pid_nil_pitch.get_pid();  // M_c
-
-}
-
-void CEMAV::compute_IL_pitch_roll(float des_pitch, float des_roll, float (&commands)[2]) {
-    float err_pitch = des_pitch - _ahrs.pitch;
-    float err_roll = des_roll - _ahrs.roll;
-
-    // Set and then compute the att PID terms, the output is desired rates in p and q
-    _pid_il_pitch.set_input_filter_all(err_pitch);
-    _pid_il_roll.set_input_filter_all(err_roll);
-
-    float des_p = _pid_il_roll.get_pid();
-    float des_q = _pid_il_pitch.get_pid();
+void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, float cur_rpm, float (&commands)[2],
+                                     int rate_ctrl) {
 
     float cur_p = _ahrs.get_gyro()[0];
     float cur_q = _ahrs.get_gyro()[1];
 
-    switch (_inner_loop_type) {
-        case 0:
+    int rate_switch;
+    if (rate_ctrl == 0) {
+        rate_switch = _rate_controller_type;
+    } else {
+        rate_switch = rate_ctrl;
+    }
+
+    switch (rate_switch) {
+        case 1: { // PID Inner Loop
+            // PID controller takes in desired lat_rate and des_long_rate, and outputs p_dot_c and q_dot_c
+            float lat_error = des_lat_rate - cur_p; // diff in rad/sec
+            float long_error = des_long_rate - cur_q; // diff in rad/sec
+
+            _pid_rate_lat.set_input_filter_d(lat_error); // Filter the error signal
+            _pid_rate_long.set_input_filter_d(long_error); // Filter the error signal
+
             // Set and then compute the angular velocity PID terms, the output is L_c, and M_c
-            commands[0] = compute_lat_rate_control(des_p); // L_c
-            commands[1] = compute_long_rate_control(des_q);  // M_c
+            commands[0] = _pid_rate_lat.get_pid(); // L_c
+            commands[1] = _pid_rate_long.get_pid();  // M_c
             break;
+        }
 
-        case 1:
-            _lqr.compute_twostate_pq(cur_p, cur_q, des_p, des_q, commands);
+        case 2: { // LQR state feedback inner loop
+            _lqr.compute_twostate_pq(cur_p, cur_q, des_lat_rate, des_long_rate, commands);
             break;
+        }
 
-        default:
+        case 3: { // NDI inner loop
+            float cur_omega = float(cur_rpm) / 100.0 * M_PI / 90.0 /
+                              60.0; // Cur RPM is in centi-degrees per minute, convert to rad/s
+
+            // PID controller takes in desired lat_rate and des_long_rate, and outputs p_dot_c and q_dot_c
+            float lat_error = des_lat_rate - cur_p; // diff in rad/sec
+            float long_error = des_long_rate - cur_q; // diff in rad/sec
+
+            _pid_di_lat.set_input_filter_d(lat_error);
+            _pid_di_long.set_input_filter_d(long_error);
+
+            float p_dot_c = _pid_di_lat.get_pid();
+            float q_dot_c = _pid_di_long.get_pid();
+
+            // Compute the commands based on PID compensator output and sensor data
+            _di.compute_DI_pq(cur_p, cur_q, cur_omega, p_dot_c, q_dot_c, commands);
+            break;
+        }
+
+        default: {
             commands[0] = 0;
             commands[1] = 0;
             break;
+        }
+    }
+}
+
+
+// Attitude controller
+
+void CEMAV::compute_pitch_roll_commands(float des_pitch, float des_roll, float cur_rpm, float (&commands)[2]) {
+    float err_pitch = des_pitch - _ahrs.pitch;
+    float err_roll = des_roll - _ahrs.roll;
+
+    if (_att_controller_type == 0) {
+        // No inner loop
+        // Set and then compute the angular velocity PID terms, the output is L_c, and M_c
+        _pid_nil_pitch.set_input_filter_all(err_pitch);
+        _pid_nil_roll.set_input_filter_all(err_roll);
+        commands[0] = _pid_nil_roll.get_pid(); // L_c
+        commands[1] = _pid_nil_pitch.get_pid();  // M_c
+    } else { // 1: PID inner loop, 2: Statefeedback inner loop, 3: DI inner loop
+        // Set and then compute the att PID terms, the output is desired rates in p and q
+        _pid_il_pitch.set_input_filter_all(err_pitch);
+        _pid_il_roll.set_input_filter_all(err_roll);
+
+        float des_lat_rate = _pid_il_roll.get_pid();
+        float des_long_rate = _pid_il_pitch.get_pid();
+
+        compute_pq_rate_commands(des_lat_rate, des_long_rate, cur_rpm, commands, _att_controller_type);
     }
 
 }
 
+// Crossfeed functions
 void CEMAV::compute_crossfeed_LM(float lat_c, float lon_c, float& cf_L, float& cf_M) {
     _cf.compute_crossfeed_moments(lat_c, lon_c, cf_L, cf_M);
 }
 
+// Flap scaling for inputs
 float CEMAV::rescale_flaps(float input_command) {
     return (_max_flap_angle - _min_flap_angle) * input_command + _min_flap_angle;
 }

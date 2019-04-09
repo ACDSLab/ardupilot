@@ -53,10 +53,13 @@ void Copter::ModeAttIL::run()
 	float roll_stick_norm =  channel_roll->norm_input_dz();  // -1 to 1
 	float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); // rad
 	float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
-	
-	// Declare the initial commands [L_c, M_c], and get them from PID
+
+    float cur_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
+
+
+    // Declare the initial commands [L_c, M_c], and get them from PID
 	float commands[2];
-	cemav->compute_IL_pitch_roll(des_pitch, des_roll, commands);
+	cemav->compute_pitch_roll_commands(des_pitch, des_roll, cur_rpm, commands);
 	
 	// Declare the crossfed moment commands
     float cf_L;
