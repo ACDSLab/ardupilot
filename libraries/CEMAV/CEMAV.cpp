@@ -356,7 +356,7 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
 	q_dot_filter.update(cur_q, t1);
 	
 	float curr_p_dot = p_dot_filter.slope();
-	float curr_q_dot - q_dot_filter.slope();
+	float curr_q_dot = q_dot_filter.slope();
 	
     int rate_switch;
     if (rate_ctrl == 0) {
@@ -391,7 +391,8 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
             // Compute the commands based on sensor data
             _di.compute_DI_pq(cur_p, cur_q, cur_omega, des_lat_rate, des_long_rate, commands);
             break;
-			
+        }
+
 		case 4: { // NDI inner loop stage 2 (omega_dot feedback)
             float cur_omega = float(cur_rpm) * 2 * M_PI / 60.0; // Cur RPM is in Rev per minute convert to rad/s
 
@@ -406,7 +407,7 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
             float q_dot_c = _pid_di_long.get_pid() + des_long_rate;
 
             // Compute the commands based on PID compensator output and sensor data
-            _di.compute_DI_pq(cur_p, cur_q, cur_omega, des_lat_rate, des_long_rate, commands);
+            _di.compute_DI_pq(cur_p, cur_q, cur_omega, p_dot_c, q_dot_c, commands);
             break;
         }
 
