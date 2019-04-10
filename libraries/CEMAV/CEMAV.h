@@ -16,6 +16,7 @@
 #include <CEMAV/LQR.h>
 #include <CEMAV/CrossFeed.h>
 #include <CEMAV/Dynamic_Inversion.h>
+#include <Filter/DerivativeFilter.h>
 
 #ifndef CEMAV_H_
 #define CEMAV_H_
@@ -85,6 +86,10 @@ private:
 
     // References to external libraries
     const AP_AHRS_View&  _ahrs;
+	
+	// Instantiate a derivative filter
+	DerivativeFilter<float, 11> p_dot_filter;
+	DerivativeFilter<float, 11> q_dot_filter;
 
     // Attitude Rate Parameters
     AP_Float _max_yaw_ds; // Maximum yaw rate in degrees per second

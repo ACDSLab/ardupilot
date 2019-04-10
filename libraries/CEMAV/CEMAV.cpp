@@ -349,7 +349,15 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
 
     float cur_p = _ahrs.get_gyro()[0];
     float cur_q = _ahrs.get_gyro()[1];
-
+	
+	// Compute the derivatives of the p and q_dot_c
+	uint32_t t1 = AP_HAL::micros();  // time of current measurement
+    p_dot_filter.update(cur_p, t1);
+	q_dot_filter.update(cur_q, t1);
+	
+	float curr_p_dot = p_dot_filter.slope();
+	float curr_q_dot - q_dot_filter.slope();
+	
     int rate_switch;
     if (rate_ctrl == 0) {
         rate_switch = _rate_controller_type;
@@ -377,18 +385,25 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
             break;
         }
 
-        case 3: { // NDI inner loop
+        case 3: { // NDI inner loop stage 1
+            float cur_omega = float(cur_rpm) * 2 * M_PI / 60.0; // Cur RPM is in Rev per minute convert to rad/s
+
+            // Compute the commands based on sensor data
+            _di.compute_DI_pq(cur_p, cur_q, cur_omega, des_lat_rate, des_long_rate, commands);
+            break;
+			
+		case 4: { // NDI inner loop stage 2 (omega_dot feedback)
             float cur_omega = float(cur_rpm) * 2 * M_PI / 60.0; // Cur RPM is in Rev per minute convert to rad/s
 
             // PID controller takes in desired lat_rate and des_long_rate, and outputs p_dot_c and q_dot_c
-            //float lat_error = des_lat_rate - cur_p; // diff in rad/sec
-            //float long_error = des_long_rate - cur_q; // diff in rad/sec
+            float lat_error = des_lat_rate - curr_p_dot; // diff in rad/sec
+            float long_error = des_long_rate - curr_q_dot; // diff in rad/sec
 
-            //_pid_di_lat.set_input_filter_d(lat_error);
-            //_pid_di_long.set_input_filter_d(long_error);
+            _pid_di_lat.set_input_filter_d(lat_error);
+            _pid_di_long.set_input_filter_d(long_error);
 
-            //float p_dot_c = _pid_di_lat.get_pid();
-            //float q_dot_c = _pid_di_long.get_pid();
+            float p_dot_c = _pid_di_lat.get_pid() + des_lat_rate;
+            float q_dot_c = _pid_di_long.get_pid() + des_long_rate;
 
             // Compute the commands based on PID compensator output and sensor data
             _di.compute_DI_pq(cur_p, cur_q, cur_omega, des_lat_rate, des_long_rate, commands);
@@ -417,7 +432,7 @@ void CEMAV::compute_pitch_roll_commands(float des_pitch, float des_roll, float c
         _pid_nil_roll.set_input_filter_all(err_roll);
         commands[0] = _pid_nil_roll.get_pid(); // L_c
         commands[1] = _pid_nil_pitch.get_pid();  // M_c
-    } else { // 1: PID inner loop, 2: Statefeedback inner loop, 3: DI inner loop
+    } else { // 1: PID inner loop, 2: Statefeedback inner loop, 3: DI inner loop 1, 4: DI inner loop 2
         // Set and then compute the att PID terms, the output is desired rates in p and q
         _pid_il_pitch.set_input_filter_all(err_pitch);
         _pid_il_roll.set_input_filter_all(err_roll);
