@@ -54,12 +54,12 @@ void Copter::ModeAttIL::run()
 	float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); // rad
 	float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
 
-    float cur_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
+    float omega_cdps = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
 
     // Declare the initial commands [L_c, M_c], and get them from PID
 	float commands[2];
-	cemav->compute_pitch_roll_commands(des_pitch, des_roll, cur_rpm, commands);
+	cemav->compute_pitch_roll_commands(des_pitch, des_roll, omega_cdps, commands);
 	
 	// Declare the crossfed moment commands
     float cf_L;

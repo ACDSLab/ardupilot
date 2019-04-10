@@ -344,7 +344,7 @@ void CEMAV::pq_feedback_flaps(float des_p, float des_q, float (&flap_angles)[8])
 
 // Rate controller
 
-void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, float cur_rpm, float (&commands)[2],
+void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, float omega_cdps, float (&commands)[2],
                                      int rate_ctrl) {
 
     float cur_p = _ahrs.get_gyro()[0];
@@ -378,21 +378,20 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
         }
 
         case 3: { // NDI inner loop
-            float cur_omega = float(cur_rpm) / 100.0 * M_PI / 90.0 /
-                              60.0; // Cur RPM is in centi-degrees per minute, convert to rad/s
+            float cur_omega = float(omega_cdps) / 100.0 * M_PI / 180.0 / 60.0; // Cur RPM is in centi-degrees per minute, convert to rad/s
 
             // PID controller takes in desired lat_rate and des_long_rate, and outputs p_dot_c and q_dot_c
-            float lat_error = des_lat_rate - cur_p; // diff in rad/sec
-            float long_error = des_long_rate - cur_q; // diff in rad/sec
+            //float lat_error = des_lat_rate - cur_p; // diff in rad/sec
+            //float long_error = des_long_rate - cur_q; // diff in rad/sec
 
-            _pid_di_lat.set_input_filter_d(lat_error);
-            _pid_di_long.set_input_filter_d(long_error);
+            //_pid_di_lat.set_input_filter_d(lat_error);
+            //_pid_di_long.set_input_filter_d(long_error);
 
-            float p_dot_c = _pid_di_lat.get_pid();
-            float q_dot_c = _pid_di_long.get_pid();
+            //float p_dot_c = _pid_di_lat.get_pid();
+            //float q_dot_c = _pid_di_long.get_pid();
 
             // Compute the commands based on PID compensator output and sensor data
-            _di.compute_DI_pq(cur_p, cur_q, cur_omega, p_dot_c, q_dot_c, commands);
+            _di.compute_DI_pq(cur_p, cur_q, cur_omega, des_lat_rate, des_long_rate, commands);
             break;
         }
 
@@ -407,7 +406,7 @@ void CEMAV::compute_pq_rate_commands(float des_lat_rate, float des_long_rate, fl
 
 // Attitude controller
 
-void CEMAV::compute_pitch_roll_commands(float des_pitch, float des_roll, float cur_rpm, float (&commands)[2]) {
+void CEMAV::compute_pitch_roll_commands(float des_pitch, float des_roll, float omega_cdps, float (&commands)[2]) {
     float err_pitch = des_pitch - _ahrs.pitch;
     float err_roll = des_roll - _ahrs.roll;
 
@@ -426,7 +425,7 @@ void CEMAV::compute_pitch_roll_commands(float des_pitch, float des_roll, float c
         float des_lat_rate = _pid_il_roll.get_pid();
         float des_long_rate = _pid_il_pitch.get_pid();
 
-        compute_pq_rate_commands(des_lat_rate, des_long_rate, cur_rpm, commands, _att_controller_type);
+        compute_pq_rate_commands(des_lat_rate, des_long_rate, omega_cdps, commands, _att_controller_type);
     }
 
 }

@@ -50,7 +50,7 @@ public:
 
     // Rate control
     // There are 3 potential forms of rate control: 1: PID, 2: Poleplacement / statefeedback/ LQR, 3: NDI
-    void compute_pq_rate_commands(float des_lat_rate, float des_long_rate, float cur_rpm, float (&commands)[2],
+    void compute_pq_rate_commands(float des_lat_rate, float des_long_rate, float omega_cdps, float (&commands)[2],
             int rate_ctrl);
 
 
@@ -60,7 +60,7 @@ public:
     //                       1: PID on att and rate,
     //                       2: PID on att, statefeedback on rate,
     //                       3: PID on att, NDI on rate
-    void compute_pitch_roll_commands(float des_pitch, float des_roll, float cur_rpm, float (&commands)[2]);
+    void compute_pitch_roll_commands(float des_pitch, float des_roll, float omega_cdps, float (&commands)[2]);
 
 
     Rudder& get_rudder(){return _rudder;}

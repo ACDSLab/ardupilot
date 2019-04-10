@@ -88,11 +88,11 @@ void Copter::ModePQFeedback::run()
 	float des_long_rate = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
 	float des_lat_rate = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
 
-    float cur_rpm = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
+    float omega_cdps = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
 
 	// Compute the longitudinal and lateral commands using pq feedback
 	float commands[2];
-	cemav->compute_pq_rate_commands(des_lat_rate, des_long_rate, cur_rpm, commands, 0); // rate_ctrl is 0, since we are using the rate controller
+	cemav->compute_pq_rate_commands(des_lat_rate, des_long_rate, omega_cdps, commands, 0); // rate_ctrl is 0, since we are using the rate controller
 
     // Declare the crossfed moment commands
     float cf_L;
