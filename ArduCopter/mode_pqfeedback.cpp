@@ -88,11 +88,11 @@ void Copter::ModePQFeedback::run()
 	float des_long_rate = cemav->get_pilot_des_q(q_stick_norm); // rad/sec
 	float des_lat_rate = cemav->get_pilot_des_p(p_stick_norm); // rad/sec
 
-    float omega_cdps = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
+    float cur_rpm = copter.rpm_sensor.get_rpm(0); // RPM in revolutions per minute
 
 	// Compute the longitudinal and lateral commands using pq feedback
 	float commands[2];
-	cemav->compute_pq_rate_commands(des_lat_rate, des_long_rate, omega_cdps, commands, 0); // rate_ctrl is 0, since we are using the rate controller
+	cemav->compute_pq_rate_commands(des_lat_rate, des_long_rate, cur_rpm, commands, 0); // rate_ctrl is 0, since we are using the rate controller
 
     // Declare the crossfed moment commands
     float cf_L;
@@ -146,11 +146,13 @@ void Copter::ModePQFeedback::run()
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, cemav->flap_angle_to_pwm(F7_c, 7));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, cemav->flap_angle_to_pwm(F8_c, 8));
 
+
         /**************************
         * Debug printing
         ***************************/
-//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap5, (int) curr_rpm);
-//        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, (int) des_rpm);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_debug_1, (int) cur_rpm);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_debug_2, (int) (500*commands[0]+1500));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_debug_3, (int) (500*commands[1]+1500));
     } else {
         counter += 1;
     }

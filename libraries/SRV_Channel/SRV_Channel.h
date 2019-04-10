@@ -131,6 +131,9 @@ public:
         k_cemav_flap8           = 96,
         k_cemav_rudder          = 97,
         k_cemav_throttle        = 98,
+        k_cemav_debug_1         = 99,
+        k_cemav_debug_2         = 100,
+        k_cemav_debug_3         = 101,
         k_nr_aux_servo_functions         ///< This must be the last enum value (only add new values _before_ this one)
     } Aux_servo_function_t;
 

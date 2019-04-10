@@ -54,12 +54,12 @@ void Copter::ModeAttIL::run()
 	float des_pitch = cemav->get_pilot_des_pitch(pitch_stick_norm); // rad
 	float des_roll = cemav->get_pilot_des_roll(roll_stick_norm); // rad
 
-    float omega_cdps = copter.rpm_sensor.get_rpm(0); // RPM in centi revolutions per minute
+    float cur_rpm = copter.rpm_sensor.get_rpm(0); // RPM in revolutions per minute
 
 
     // Declare the initial commands [L_c, M_c], and get them from PID
 	float commands[2];
-	cemav->compute_pitch_roll_commands(des_pitch, des_roll, omega_cdps, commands);
+	cemav->compute_pitch_roll_commands(des_pitch, des_roll, cur_rpm, commands);
 	
 	// Declare the crossfed moment commands
     float cf_L;
@@ -105,6 +105,13 @@ void Copter::ModeAttIL::run()
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap6, cemav->flap_angle_to_pwm(F6_c, 6));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap7, cemav->flap_angle_to_pwm(F7_c, 7));
         SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_flap8, cemav->flap_angle_to_pwm(F8_c, 8));
+
+        /**************************
+        * Debug printing
+        ***************************/
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_debug_1, (int) cur_rpm);
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_debug_2, (int) (500*commands[0]+1500));
+        SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_debug_3, (int) (500*commands[1]+1500));
 
 
     } else {
