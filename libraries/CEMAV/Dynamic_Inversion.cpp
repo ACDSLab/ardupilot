@@ -34,7 +34,7 @@ void Dynamic_Inversion::compute_DI_pq(float cur_p, float cur_q, float cur_omega,
 	
 	// Fit of pitch/roll control moment at max flap deflection to motor speed (rad/s, assumes constant 17 degree fishtail trim)
 	// Max moment in absolute terms is 3.54Nm@6000rpm, 4.94Nm@7000rpm, 6.57Nm@8000rpm
-	LM_max = 0.00001052*cur_omega*cur_omega - 0.0009282*cur_omega; 
+	float LM_max = 0.00001052*cur_omega*cur_omega - 0.0009282*cur_omega; 
 	commands[0] = _Ir*cur_omega*cur_q / LM_max + p_dot_c;
     commands[1] = -_Ir*cur_omega*cur_p / LM_max + q_dot_c;
 }
