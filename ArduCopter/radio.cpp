@@ -25,12 +25,14 @@ void Copter::init_rc_in()
     channel_pitch    = rc().channel(rcmap.pitch()-1);
     channel_throttle = rc().channel(rcmap.throttle()-1);
     channel_yaw      = rc().channel(rcmap.yaw()-1);
+    channel_collective = rc().channel(rcmap.collective()-1);
 
     // set rc channel ranges
     channel_roll->set_angle(ROLL_PITCH_YAW_INPUT_MAX);
     channel_pitch->set_angle(ROLL_PITCH_YAW_INPUT_MAX);
     channel_yaw->set_angle(ROLL_PITCH_YAW_INPUT_MAX);
     channel_throttle->set_range(1000);
+    channel_collective->set_range(1000);
 
     //set auxiliary servo ranges
     rc().channel(CH_5)->set_range(1000);

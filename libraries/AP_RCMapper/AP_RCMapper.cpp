@@ -58,6 +58,15 @@ const AP_Param::GroupInfo RCMapper::var_info[] = {
     // @Values{Sub}: 1-8
     AP_GROUPINFO_FRAME("LATERAL",    5, RCMapper, _ch_lateral, 7, AP_PARAM_FRAME_SUB),
 
+    // @Param: COLLECTIVE
+    // @DisplayName: Collective channel
+    // @Description: Collective channel number. This is useful when you have a RC transmitter that can't change the channel order easily. Reboot is required for changes to take effect.
+    // @Range: 1 8
+    // @Increment: 1
+    // @User: Advanced
+    // @RebootRequired: True
+    AP_GROUPINFO("COLLECT",         6, RCMapper, _ch_collective, 5),
+
     AP_GROUPEND
 };
 

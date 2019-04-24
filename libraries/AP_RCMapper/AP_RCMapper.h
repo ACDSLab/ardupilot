@@ -30,6 +30,10 @@ public:
     /// lateral - return input channel number for lateral input
     uint8_t lateral() const { return _ch_lateral; }
 
+    /// collective - return input channel number for collective input
+    uint8_t collective() const { return _ch_collective; }
+
+
     static const struct AP_Param::GroupInfo var_info[];
 
 private:
@@ -40,4 +44,5 @@ private:
     AP_Int8 _ch_throttle;
     AP_Int8 _ch_forward;
     AP_Int8 _ch_lateral;
+    AP_Int8 _ch_collective;
 };

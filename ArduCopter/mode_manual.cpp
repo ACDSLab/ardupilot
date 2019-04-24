@@ -103,7 +103,7 @@ void Copter::ModeManual::run()
 			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, 900);
 			// Removed the return statement, because we want to be able to move the control surfaces even without arming.
 		} else {
-			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_throttle->get_radio_in());
+			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_collective->get_radio_in());
 		}
 		
 		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
