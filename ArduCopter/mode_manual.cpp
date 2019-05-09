@@ -93,10 +93,10 @@ void Copter::ModeManual::run()
 
 	float F6_c = rescale_flaps(constrain_value(-longitudinal_command, (float) 0, (float) 1));
 	float F7_c = F6_c;
-		
+
     if (counter >= cemav->get_control_counter()) {
         counter = 1;
-		
+
 		   // if not armed set throttle to zero and exit immediately
 		if (!motors->armed() ) {
 			// zero_throttle_and_relax_ac();
@@ -105,7 +105,7 @@ void Copter::ModeManual::run()
 		} else {
 			SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_throttle, channel_collective->get_radio_in());
 		}
-		
+
 		SRV_Channels::set_output_pwm(SRV_Channel::k_cemav_rudder, cemav->rudder_angle_to_pwm(u_rudder_angle));
 
         // Set the output PWM's for the 8 flap vehicle
