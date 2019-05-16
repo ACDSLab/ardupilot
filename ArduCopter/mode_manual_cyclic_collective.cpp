@@ -71,8 +71,8 @@ void Copter::ModeManualCF::run()
     ********************************/
     float F1_c, F2_c, F3_c, F4_c, F5_c, F6_c, F7_c, F8_c;
     // Compute how much range is available for the flaps to increase or decrease
-    float flap_increase_range = cemav->get_max_flap_angle()/90.0 - beta_collective;
-    float flap_decrease_range = beta_collective - cemav->get_min_flap_angle()/90.0; // TODO check this!!
+    float flap_increase_range = 1 - beta_collective;
+    float flap_decrease_range = beta_collective;
     float available_range = (flap_increase_range > flap_decrease_range) ? flap_decrease_range : flap_increase_range;
 
     // Longitudinal moment
@@ -82,8 +82,18 @@ void Copter::ModeManualCF::run()
 
         F4_c = cemav->rescale_flaps(beta_collective + (cf_M / 2.0));
         F5_c = F4_c;
-    } else { // One flap must be closed or open fully, the other flap should take up the rest of the differential
+    } else if (beta_collective > 0.5 ) { // One flap must be closed or open fully, the other flap should take up the rest of the differential
         // Fore and Aft Flap Pairs
+        // In this case, the collective value is commanding an angle that is greater than half the range, thus to maintain
+        // smoothness of flap actuation, it is better to move the flap closer to 90 degrees.
+        F1_c = cemav->rescale_flaps(1 - constrain_value(cf_M, (float) 0, (float) 1));
+        F8_c = F1_c;
+
+        F4_c = cemav->rescale_flaps(1 - constrain_value(-cf_M, (float) 0, (float) 1));
+        F5_c = F4_c;
+    } else if (beta_collective <= 0.5 ) {
+        // In this case, the collective value is commanding an angle that is less than half the range, thus to maintain
+        // smoothness of flap actuation, it is better to move the flap closer to 0 degrees.
         F1_c = cemav->rescale_flaps(constrain_value(-cf_M, (float) 0, (float) 1));
         F8_c = F1_c;
 
@@ -98,8 +108,18 @@ void Copter::ModeManualCF::run()
 
         F6_c = cemav->rescale_flaps(beta_collective - (cf_L / 2.0));
         F7_c = F6_c;
-    } else { // One flap must be closed or open fully, the other flap should take up the rest of the differential
+    } else (beta_collective > 0.5 ){ // One flap must be closed or open fully, the other flap should take up the rest of the differential
         // Port and Starboard Flap Pairs
+        // In this case, the collective value is commanding an angle that is greater than half the range, thus to maintain
+        // smoothness of flap actuation, it is better to move the flap closer to 90 degrees.
+        F2_c = cemav->rescale_flaps(1-constrain_value(-cf_L, (float) 0, (float) 1));
+        F3_c = F2_c;
+
+        F6_c = cemav->rescale_flaps(1-constrain_value(cf_L, (float) 0, (float) 1));
+        F7_c = F6_c;
+    } else (beta_collective <= 0.5 ) {
+        // In this case, the collective value is commanding an angle that is less than half the range, thus to maintain
+        // smoothness of flap actuation, it is better to move the flap closer to 0 degrees.
         F2_c = cemav->rescale_flaps(constrain_value(cf_L, (float) 0, (float) 1));
         F3_c = F2_c;
 
