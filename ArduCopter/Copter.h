@@ -996,6 +996,8 @@ private:
 #endif
     ModeManual mode_manual;
     ModeManualCF mode_manual_crossfeed;
+    ModeManualCC mode_manual_cyclic_collective;
+
 
     ModePQFeedback mode_pqfeedback;
     ModePQPID mode_pq_pid;

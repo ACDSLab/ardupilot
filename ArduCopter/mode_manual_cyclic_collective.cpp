@@ -6,7 +6,7 @@
  */
 
 // manual_init - initialise manual controller
-bool Copter::ModeManualCF::init(bool ignore_checks)
+bool Copter::ModeManualCC::init(bool ignore_checks)
 {
     // // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
     // if (motors->armed() && ap.land_complete && !copter.flightmode->has_manual_throttle() &&
@@ -23,7 +23,7 @@ bool Copter::ModeManualCF::init(bool ignore_checks)
 
 // manual_run - runs the main manual function that passes rc input as motor commands
 // should be called at 100hz or more
-void Copter::ModeManualCF::run()
+void Copter::ModeManualCC::run()
 {
 
     // clear landing flag
@@ -91,7 +91,7 @@ void Copter::ModeManualCF::run()
 
         F4_c = cemav->rescale_flaps(1 - constrain_value(-cf_M, (float) 0, (float) 1));
         F5_c = F4_c;
-    } else if (beta_collective <= 0.5 ) {
+    } else  {
         // In this case, the collective value is commanding an angle that is less than half the range, thus to maintain
         // smoothness of flap actuation, it is better to move the flap closer to 0 degrees.
         F1_c = cemav->rescale_flaps(constrain_value(-cf_M, (float) 0, (float) 1));
@@ -108,7 +108,7 @@ void Copter::ModeManualCF::run()
 
         F6_c = cemav->rescale_flaps(beta_collective - (cf_L / 2.0));
         F7_c = F6_c;
-    } else (beta_collective > 0.5 ){ // One flap must be closed or open fully, the other flap should take up the rest of the differential
+    } else if(beta_collective > 0.5 ) { // One flap must be closed or open fully, the other flap should take up the rest of the differential
         // Port and Starboard Flap Pairs
         // In this case, the collective value is commanding an angle that is greater than half the range, thus to maintain
         // smoothness of flap actuation, it is better to move the flap closer to 90 degrees.
@@ -117,7 +117,7 @@ void Copter::ModeManualCF::run()
 
         F6_c = cemav->rescale_flaps(1-constrain_value(cf_L, (float) 0, (float) 1));
         F7_c = F6_c;
-    } else (beta_collective <= 0.5 ) {
+    } else {
         // In this case, the collective value is commanding an angle that is less than half the range, thus to maintain
         // smoothness of flap actuation, it is better to move the flap closer to 0 degrees.
         F2_c = cemav->rescale_flaps(constrain_value(cf_L, (float) 0, (float) 1));

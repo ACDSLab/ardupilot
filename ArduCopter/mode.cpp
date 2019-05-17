@@ -166,6 +166,10 @@ Copter::Mode *Copter::mode_from_mode_num(const uint8_t mode)
             ret = &mode_manual_crossfeed;
             break;
 
+        case MAN_CC:
+            ret = &mode_manual_cyclic_collective;
+            break;
+
         case PQFEED:
             ret = &mode_pqfeedback;
             break;

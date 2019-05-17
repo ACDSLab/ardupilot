@@ -59,6 +59,7 @@ enum control_mode_t {
     PQPID        = 27, // Airframe stabilized to zero pitch and roll rate through PID control + crossfeed
     ATT_NIL      = 28, // Airframe stabilized to zero pitch and roll through only attitude error feedback
     ATT_IL       = 29, // Airframe stabilized to zero pitch and roll through an outerloop PID and an inner loop rate control
+    MAN_CC       = 30, // Airframe controlled manually using cyclic and collective mode.
 };
 
 enum mode_reason_t {
